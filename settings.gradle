@@ -1,1 +1,1 @@
-include ':app'
+include ':app', ':musicprovider', ':protocol', ':userdomain', ':songdomain', ':songlistdomain', ':commentdomain', ':utils', ':network'

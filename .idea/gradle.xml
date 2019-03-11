@@ -12,6 +12,14 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/commentdomain" />
+            <option value="$PROJECT_DIR$/musicprovider" />
+            <option value="$PROJECT_DIR$/network" />
+            <option value="$PROJECT_DIR$/protocol" />
+            <option value="$PROJECT_DIR$/songdomain" />
+            <option value="$PROJECT_DIR$/songlistdomain" />
+            <option value="$PROJECT_DIR$/userdomain" />
+            <option value="$PROJECT_DIR$/utils" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
