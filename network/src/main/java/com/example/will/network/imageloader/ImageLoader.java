@@ -2,20 +2,31 @@ package com.example.will.network.imageloader;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Looper;
 import android.os.StatFs;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.INotificationSideChannel;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.util.LruCache;
+import android.widget.ImageView;
 
 import com.example.will.network.imageloader.disklrucache.DiskLruCache;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.Executor;
@@ -24,6 +35,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
 
 public class ImageLoader {
     private static final String TAG = "ImageLoader";
@@ -49,6 +61,8 @@ public class ImageLoader {
 
     private boolean mIsDiskLruCacheCreated = false;
 
+    //TODO 加载前图片与加载后图片适应
+
     public static final ThreadFactory mThreadFactory = new ThreadFactory() {
         private AtomicInteger mCount = new AtomicInteger(1);
         @Override
@@ -64,6 +78,8 @@ public class ImageLoader {
             TimeUnit.SECONDS,
             new LinkedBlockingQueue<Runnable>(),
             mThreadFactory);
+
+    public static Handler mMainHandler = new Handler(Looper.getMainLooper());
 
 
     private Context mContext;
@@ -178,10 +194,81 @@ public class ImageLoader {
         }
     }
 
+    private boolean downloadUrlToStream(String urlString, OutputStream outputStream) {
+        HttpURLConnection httpURLConnection = null;
+        BufferedOutputStream bufferedOutputStream = null;
+        BufferedInputStream bufferedInputStream = null;
+        try {
+            URL url = new URL(urlString);
+            httpURLConnection = (HttpURLConnection) url.openConnection();
+            bufferedInputStream = new BufferedInputStream(httpURLConnection.getInputStream(), IO_BUFFER_SIZE);
+            bufferedOutputStream = new BufferedOutputStream(outputStream, IO_BUFFER_SIZE);
+            int b;
+            while ((b = bufferedInputStream.read()) != -1) {
+                bufferedOutputStream.write(b);
+            }
+            return true;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (httpURLConnection != null) {
+                httpURLConnection.disconnect();
+            }
+            try {
+                bufferedInputStream.close();
+                bufferedOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    private Bitmap downloadBitmapFromUrl(String urlString) {
+        HttpURLConnection httpURLConnection = null;
+        BufferedInputStream inputStream = null;
+        HttpURLConnection connection = null;
+        Bitmap bitmap = null;
+        try {
+            URL url = new URL(urlString);
+            connection = (HttpURLConnection) url.openConnection();
+            inputStream = new BufferedInputStream(connection.getInputStream(), IO_BUFFER_SIZE);
+            bitmap = BitmapFactory.decodeStream(inputStream);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
+
+    private Bitmap loadBitmapFromHttp(String url, int reqWidth, int reqHeight) throws IOException{
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            throw new RuntimeException("can't visit network from UI thread");
+        }
+        if (mDiskLruCache != null) {
+            return null;
+        }
+        String key = hashKeyFromUrl(url);
+        DiskLruCache.Editor editor = mDiskLruCache.edit(key);
+        if (editor != null) {
+            OutputStream outputStream = editor.newOutputStream(DISK_CACHE_INDEX);
+            if (downloadUrlToStream(url, outputStream)) {
+                editor.commit();
+            } else {
+                editor.abort();
+            }
+            mDiskLruCache.flush();
+        }
+        return loadBitmapFromDiskCache(url, reqWidth, reqHeight);
+    }
 
 
 
-    public File getDiskCacheDir(Context context, String uniqueName) {
+
+    private File getDiskCacheDir(Context context, String uniqueName) {
         boolean externalStorageAvailable = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
         String cachePath;
         if (externalStorageAvailable) {
@@ -197,7 +284,61 @@ public class ImageLoader {
         return path.getUsableSpace();
     }
 
+    public Bitmap loadBitmap(String uri, int reqWidth, int reqHeight) {
+        Bitmap bitmap = loadBitmapFromMemoryCache(uri);
+        if (bitmap != null) {
+            Log.e(TAG, "load bitmap from memoryCache");
+            return bitmap;
+        }
+        try {
+            bitmap = loadBitmapFromDiskCache(uri, reqWidth, reqHeight);
+            if (bitmap != null) {
+                Log.e(TAG, "load bitmap from diskCache");
+                return bitmap;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (bitmap == null &&!mIsDiskLruCacheCreated) {
+            Log.e(TAG, "diskcache is not created");
+            bitmap = downloadBitmapFromUrl(uri);
+        }
+        return bitmap;
+    }
 
 
+    public void bindBitmap(final String uri, final ImageView imageView) {
+        bindBitmap(uri, imageView, 0, 0);
+    }
+
+    /**
+     *  绑定图片 记住只能在主线程调用
+     * @param uri
+     * @param imageView
+     * @param reqWidth
+     * @param reqHeight
+     */
+    public void bindBitmap(final String uri, final ImageView imageView, final int reqWidth, final int reqHeight) {
+        Bitmap bitmap = loadBitmapFromMemoryCache(uri);
+        if (bitmap != null) {
+            imageView.setImageBitmap(bitmap);
+            return;
+        }
+        IMAGE_LOADER_THREAD_POOL.execute(new Runnable() {
+            @Override
+            public void run() {
+                final Bitmap bitmap = loadBitmap(uri, reqWidth, reqHeight);
+                if (bitmap != null) {
+                    mMainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            imageView.setImageBitmap(bitmap);
+                        }
+                    });
+                }
+
+            }
+        });
+    }
 
 }
