@@ -1,1 +1,1 @@
-include ':app', ':musicprovider', ':protocol', ':userdomain', ':songdomain', ':songlistdomain', ':commentdomain', ':utils', ':network'
+include ':app', ':musicprovider', ':protocol', ':userdomain', ':songdomain', ':songlistdomain', ':commentdomain', ':utils', ':network', ':datacontext'
