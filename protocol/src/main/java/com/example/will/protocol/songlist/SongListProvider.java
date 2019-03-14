@@ -10,6 +10,7 @@ import com.example.will.protocol.songlist.request.UploadSongListFileRequest;
 import com.example.will.protocol.songlist.response.AddSongListResponse;
 import com.example.will.protocol.songlist.response.AddSongToSongListResponse;
 import com.example.will.protocol.songlist.response.DeleteSongFromSongListResponse;
+import com.example.will.protocol.songlist.response.DeleteSongListResponse;
 import com.example.will.protocol.songlist.response.QuerySongListResponse;
 import com.example.will.protocol.songlist.response.QuerySongListsResponse;
 import com.example.will.protocol.songlist.response.UpdateSongListResponse;
@@ -67,4 +68,11 @@ public interface SongListProvider extends BasicProvider {
      * @param callback
      */
     void deleSongFromSongList(DeleteSongFromSongListRequest request, HttpCallback<DeleteSongFromSongListResponse> callback);
+
+    /**
+     * 删除歌单
+     * @param songListId
+     * @param callback
+     */
+    void deleteSongList(long songListId, HttpCallback<DeleteSongListResponse> callback);
 }
