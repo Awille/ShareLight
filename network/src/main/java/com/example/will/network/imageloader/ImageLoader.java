@@ -45,8 +45,6 @@ public class ImageLoader {
      */
     private static final long DISK_CACHE_SIZE = 1024 * 1024 * 50;
 
-    public static final int MESSAGE_POST_RESULT = 1;
-
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
 
     private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
@@ -72,7 +70,7 @@ public class ImageLoader {
     };
 
     public static final Executor IMAGE_LOADER_THREAD_POOL = new ThreadPoolExecutor(
-            CPU_COUNT,
+            CORE_POOL_SIZE,
             MAXIMUM_POOL_SIZE,
             KEEP_ALIVE,
             TimeUnit.SECONDS,
