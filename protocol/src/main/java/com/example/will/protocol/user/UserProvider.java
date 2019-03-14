@@ -22,24 +22,28 @@ public interface UserProvider extends BasicProvider {
      * @param callback
      */
     void addUser(AddUserRequest request, HttpCallback<AddUserResponse> callback);
+
     /**
      * 查询用户
      * @param account
      * @param callback
      */
     void queryUser(String account, HttpCallback<QueryUserResponse> callback);
+
     /**
      * 更改密码
      * @param request
      * @param callback
      */
     void changePassword(ChangePasswordRequest request, HttpCallback<ChangePasswordResponse> callback);
+
     /**
      * 更新用户信息
      * @param request
      * @param callback
      */
     void updateUserInfo(UpdateUserInfoRequest request, HttpCallback<UpdateUserInfoResponse> callback);
+
     /**
      * 更改用户图片
      * @param request
