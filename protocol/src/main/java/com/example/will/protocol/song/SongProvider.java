@@ -18,14 +18,15 @@ public interface SongProvider extends BasicProvider {
      * @param songId
      * @param callback
      */
-    void querySong(String songId, QuerySongCallback callback);
+    void querySong(long songId, QuerySongCallback callback);
 
     /**
      * 根据 作者author 或者 歌名songName 获取歌曲 list
-     * @param key author OR songName
+     * @param songName
+     * @param author
      * @param callback
      */
-    void querySongs(String key, QuerySongsCallback callback);
+    void querySongs(String songName, long author,  QuerySongsCallback callback);
 
     /**
      * 上传歌曲文件
