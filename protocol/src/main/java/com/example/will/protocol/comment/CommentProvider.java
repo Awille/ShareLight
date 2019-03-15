@@ -1,11 +1,11 @@
 package com.example.will.protocol.comment;
 
-import com.example.will.network.retrofit.HttpCallback;
 import com.example.will.protocol.BasicProvider;
-import com.example.will.protocol.comment.reponse.AddCommentResponse;
-import com.example.will.protocol.comment.reponse.DeleteCommentResponse;
-import com.example.will.protocol.comment.reponse.QueryCommentResponse;
-import com.example.will.protocol.comment.reponse.QueryCommentsResponse;
+import com.example.will.protocol.comment.callback.AddCommentCallback;
+import com.example.will.protocol.comment.callback.DeleteCommentCallback;
+import com.example.will.protocol.comment.callback.ManageLikeCallback;
+import com.example.will.protocol.comment.callback.QueryCommentCallback;
+import com.example.will.protocol.comment.callback.QueryCommentsCallback;
 import com.example.will.protocol.comment.request.AddCommentRequest;
 import com.example.will.protocol.comment.request.LikeRequest;
 
@@ -18,33 +18,33 @@ public interface CommentProvider extends BasicProvider {
      * @param commentId
      * @param callback
      */
-    void queryComment(long commentId, HttpCallback<QueryCommentResponse> callback);
+    void queryComment(long commentId, QueryCommentCallback callback);
 
     /**
      * 查询歌曲下的以及评论或者某个一级评论下的二级评论
      * @param key
      * @param callback
      */
-    void queryComments(long key, HttpCallback<QueryCommentsResponse> callback);
+    void queryComments(long key, QueryCommentsCallback callback);
 
     /**
      * 添加评论
      * @param request
      * @param callback
      */
-    void addComment(AddCommentRequest request, HttpCallback<AddCommentResponse> callback);
+    void addComment(AddCommentRequest request, AddCommentCallback callback);
 
     /**
      * 踩与赞系统
      * @param request
      * @param callback
      */
-    void manageLike(LikeRequest request, HttpCallback<AddCommentResponse> callback);
+    void manageLike(LikeRequest request, ManageLikeCallback callback);
 
     /**
      * 删除评论
      * @param commentId
      * @param callback
      */
-    void deleteComment(long commentId, HttpCallback<DeleteCommentResponse> callback);
+    void deleteComment(long commentId, DeleteCommentCallback callback);
 }
