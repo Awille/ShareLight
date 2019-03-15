@@ -22,10 +22,11 @@ public interface CommentProvider extends BasicProvider {
 
     /**
      * 查询歌曲下的以及评论或者某个一级评论下的二级评论
-     * @param key
+     * @param songId
+     * @param replyCommentId
      * @param callback
      */
-    void queryComments(long key, QueryCommentsCallback callback);
+    void queryComments(long songId, long replyCommentId, QueryCommentsCallback callback);
 
     /**
      * 添加评论
