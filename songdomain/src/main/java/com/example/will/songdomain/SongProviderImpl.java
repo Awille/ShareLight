@@ -18,9 +18,9 @@ import com.example.will.protocol.song.response.UploadSongFileReponse;
 
 public class SongProviderImpl implements SongProvider {
 
-    public static SongApiService songApiService = RetrofitMrg.getINSTANCE().getRetrofit().create(SongApiService.class);
+    private static SongApiService songApiService = RetrofitMrg.getINSTANCE().getRetrofit().create(SongApiService.class);
 
-    public static String SUCCESS = CommonConstant.NetWork.SUCCESS;
+    private static String SUCCESS = CommonConstant.NetWork.SUCCESS;
 
 
     @Override

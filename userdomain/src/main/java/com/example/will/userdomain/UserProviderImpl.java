@@ -22,8 +22,8 @@ import com.example.will.protocol.user.response.UpdateUserInfoResponse;
 
 public class UserProviderImpl implements UserProvider {
 
-    public static UserApi userApiService = RetrofitMrg.getINSTANCE().getRetrofit().create(UserApi.class);
-    public static String SUCCESS = CommonConstant.NetWork.SUCCESS;
+    private static UserApi userApiService = RetrofitMrg.getINSTANCE().getRetrofit().create(UserApi.class);
+    private static String SUCCESS = CommonConstant.NetWork.SUCCESS;
 
     @Override
     public void addUser(AddUserRequest request, final AddUserCallback callback) {
