@@ -1,6 +1,7 @@
 package com.example.will.commentdomain;
 
 import com.example.will.network.retrofit.HttpCall;
+import com.example.will.network.retrofit.RetrofitMrg;
 import com.example.will.protocol.comment.reponse.AddCommentResponse;
 import com.example.will.protocol.comment.reponse.DeleteCommentResponse;
 import com.example.will.protocol.comment.reponse.LikeResponse;
@@ -17,18 +18,18 @@ import retrofit2.http.PUT;
 import retrofit2.http.Query;
 
 public interface CommentApiService {
-    @GET("restful//comment.jsp")
+    @GET(RetrofitMrg.commentUrl)
     HttpCall<QueryCommentResponse> queryComment(@Query("commentId") long commentId);
 
-    @GET("restful//comment.jsp")
+    @GET(RetrofitMrg.commentUrl)
     HttpCall<QueryCommentsResponse> queryComments(@Query("songId") long songId, @Query("replyCommentId") long replyCommentId);
 
-    @POST("restful//comment.jsp")
+    @POST(RetrofitMrg.commentUrl)
     HttpCall<AddCommentResponse> addComment(@Body AddCommentRequest request);
 
-    @PUT("restful//comment.jsp")
+    @PUT(RetrofitMrg.commentUrl)
     HttpCall<LikeResponse> manageLike(@Body LikeRequest request);
 
-    @DELETE("restful//comment.jsp")
+    @DELETE(RetrofitMrg.commentUrl)
     HttpCall<DeleteCommentResponse> deleteComment(@Query("commentId") long commentId);
 }

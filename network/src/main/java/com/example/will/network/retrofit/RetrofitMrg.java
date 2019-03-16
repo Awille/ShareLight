@@ -5,10 +5,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitMrg {
     private final String baseUrl = "http://localhost:8080//";
-    private final String userUrl = "restful//user.jsp";
-    private final String songUrl = "restful//song.jsp";
-    private final String songListUrl = "restful//songList.jsp";
-    private final String commentUrl = "restful//comment.jsp";
+    public static final String userUrl = "restful//user.jsp";
+    public static final String songUrl = "restful//song.jsp";
+    public static final String songListUrl = "restful//songList.jsp";
+    public static final String commentUrl = "restful//comment.jsp";
 
     private static RetrofitMrg INSTANCE;
 

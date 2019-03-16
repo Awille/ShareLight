@@ -3,3 +3,8 @@
 
 ## 开发问题总结
 ### 1、LruCache的LinkedHashMap的结构问题
+
+### 2、关于hashmap、 linkedhashmap、concurrenthashmap、hashtable、Treemap
+的选择问题
+
+

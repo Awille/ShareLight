@@ -2,6 +2,7 @@ package com.example.will.songlistdomain;
 
 
 import com.example.will.network.retrofit.HttpCall;
+import com.example.will.network.retrofit.RetrofitMrg;
 import com.example.will.protocol.songlist.request.AddSongListRequest;
 import com.example.will.protocol.songlist.request.AddSongToSongListRequest;
 import com.example.will.protocol.songlist.request.DeleteSongFromSongListRequest;
@@ -24,27 +25,27 @@ import retrofit2.http.PUT;
 import retrofit2.http.Query;
 
 public interface SongListApiService {
-    @GET("restful//songList.jsp")
+    @GET(RetrofitMrg.songListUrl)
     HttpCall<QuerySongListResponse> querySongList(@Query("songListId") long songListId);
 
-    @GET("restful//songList.jsp")
+    @GET(RetrofitMrg.songListUrl)
     HttpCall<QuerySongListsResponse> querySongLists(@Query("userId") long userId);
 
-    @POST("restful//songList.jsp")
+    @POST(RetrofitMrg.songListUrl)
     HttpCall<AddSongListResponse> addSongList(@Body AddSongListRequest request);
 
-    @PUT("restful//songList.jsp")
+    @PUT(RetrofitMrg.songListUrl)
     HttpCall<UploadSongListFileResponse> uploadSongListFile(@Body UploadSongListFileRequest request);
 
-    @PUT("restful//songList.jsp")
+    @PUT(RetrofitMrg.songListUrl)
     HttpCall<UpdateSongListResponse> updateSongListInfo(@Body UpdateSongListRequest request);
 
-    @PUT("restful//songList.jsp")
+    @PUT(RetrofitMrg.songListUrl)
     HttpCall<AddSongToSongListResponse> addSongToSongList(@Body AddSongToSongListRequest request);
 
-    @PUT("restful//songList.jsp")
+    @PUT(RetrofitMrg.songListUrl)
     HttpCall<DeleteSongFromSongListResponse> deleteSongFromSongList(@Body DeleteSongFromSongListRequest request);
 
-    @DELETE("restful//songList.jsp")
+    @DELETE(RetrofitMrg.songListUrl)
     HttpCall<DeleteSongListResponse> deleteSongList(@Query("songListId") long songListId);
 }

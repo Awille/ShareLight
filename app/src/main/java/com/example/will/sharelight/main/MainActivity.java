@@ -1,7 +1,9 @@
-package com.example.will.sharelight;
+package com.example.will.sharelight.main;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.example.will.sharelight.R;
 
 public class MainActivity extends AppCompatActivity {
 

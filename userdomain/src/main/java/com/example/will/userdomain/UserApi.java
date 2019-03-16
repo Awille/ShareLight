@@ -1,6 +1,7 @@
 package com.example.will.userdomain;
 
 import com.example.will.network.retrofit.HttpCall;
+import com.example.will.network.retrofit.RetrofitMrg;
 import com.example.will.protocol.user.request.AddUserRequest;
 import com.example.will.protocol.user.request.ChangePasswordRequest;
 import com.example.will.protocol.user.request.ModifyUserAvatarRequest;
@@ -20,21 +21,21 @@ import retrofit2.http.PUT;
 import retrofit2.http.Query;
 
 public interface UserApi {
-    @POST("restful//user.jsp")
+    @POST(RetrofitMrg.userUrl)
     HttpCall<AddUserResponse> addUser(@Body AddUserRequest request);
 
-    @GET("restful//user.jsp")
+    @GET(RetrofitMrg.userUrl)
     HttpCall<QueryUserResponse> queryUser(@Query("account") String account);
 
-    @PUT("restful//user.jsp")
+    @PUT(RetrofitMrg.userUrl)
     HttpCall<ChangePasswordResponse> changePassword(@Body ChangePasswordRequest request);
 
-    @PUT("restful//user.jsp")
+    @PUT(RetrofitMrg.userUrl)
     HttpCall<UpdateUserInfoResponse> updateUserInfo(@Body UpdateUserInfoRequest request);
 
-    @PUT("restful//user.jsp")
+    @PUT(RetrofitMrg.userUrl)
     HttpCall<ModifyUserAvatarResponse> modifyUserAvatar(@Body ModifyUserAvatarRequest request);
 
-    @PUT("restful//user.jsp")
+    @PUT(RetrofitMrg.userUrl)
     HttpCall<UserLoginResponse> userLogin(@Body UserLoginRequest request);
 }

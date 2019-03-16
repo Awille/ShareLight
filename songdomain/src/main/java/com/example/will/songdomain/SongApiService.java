@@ -1,6 +1,7 @@
 package com.example.will.songdomain;
 
 import com.example.will.network.retrofit.HttpCall;
+import com.example.will.network.retrofit.RetrofitMrg;
 import com.example.will.protocol.song.request.AddSongRequest;
 import com.example.will.protocol.song.request.UploadSongFileRequest;
 import com.example.will.protocol.song.response.AddSongResponse;
@@ -15,15 +16,15 @@ import retrofit2.http.PUT;
 import retrofit2.http.Query;
 
 public interface SongApiService {
-    @GET("restful//song.jsp")
+    @GET(RetrofitMrg.songUrl)
     HttpCall<QuerySongResponse> querySong(@Query("songId") long songId);
 
-    @GET("restful//song.jsp")
+    @GET(RetrofitMrg.songUrl)
     HttpCall<QuerySongsResponse> querySongs(@Query("songName") String songName, @Query("author") long author);
 
-    @PUT("restful//song.jsp")
+    @PUT(RetrofitMrg.songUrl)
     HttpCall<UploadSongFileReponse> uploadSongFile(@Body UploadSongFileRequest request);
 
-    @POST("restful//song.jsp")
+    @POST(RetrofitMrg.songUrl)
     HttpCall<AddSongResponse> addSong(@Body AddSongRequest request);
 }
