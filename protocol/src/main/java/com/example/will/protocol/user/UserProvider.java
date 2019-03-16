@@ -7,10 +7,13 @@ import com.example.will.protocol.user.callbcak.ChangePasswordCallback;
 import com.example.will.protocol.user.callbcak.ModifyUserAvatarCallback;
 import com.example.will.protocol.user.callbcak.QueryUserCallback;
 import com.example.will.protocol.user.callbcak.UpdateUserInfoCallback;
+import com.example.will.protocol.user.callbcak.UserLoginCallback;
 import com.example.will.protocol.user.request.AddUserRequest;
 import com.example.will.protocol.user.request.ChangePasswordRequest;
 import com.example.will.protocol.user.request.ModifyUserAvatarRequest;
 import com.example.will.protocol.user.request.UpdateUserInfoRequest;
+import com.example.will.protocol.user.request.UserLoginRequest;
+
 /**
  * 用户基础能力
  */
@@ -49,4 +52,11 @@ public interface UserProvider extends BasicProvider {
      * @param callback
      */
     void modifyUserAvatar(ModifyUserAvatarRequest request, ModifyUserAvatarCallback callback);
+
+    /**
+     * 用户登录
+     * @param request
+     * @param callback
+     */
+    void userLogin(UserLoginRequest request, UserLoginCallback callback);
 }

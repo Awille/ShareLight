@@ -10,15 +10,18 @@ import com.example.will.protocol.user.callbcak.ChangePasswordCallback;
 import com.example.will.protocol.user.callbcak.ModifyUserAvatarCallback;
 import com.example.will.protocol.user.callbcak.QueryUserCallback;
 import com.example.will.protocol.user.callbcak.UpdateUserInfoCallback;
+import com.example.will.protocol.user.callbcak.UserLoginCallback;
 import com.example.will.protocol.user.request.AddUserRequest;
 import com.example.will.protocol.user.request.ChangePasswordRequest;
 import com.example.will.protocol.user.request.ModifyUserAvatarRequest;
 import com.example.will.protocol.user.request.UpdateUserInfoRequest;
+import com.example.will.protocol.user.request.UserLoginRequest;
 import com.example.will.protocol.user.response.AddUserResponse;
 import com.example.will.protocol.user.response.ChangePasswordResponse;
 import com.example.will.protocol.user.response.ModifyUserAvatarResponse;
 import com.example.will.protocol.user.response.QueryUserResponse;
 import com.example.will.protocol.user.response.UpdateUserInfoResponse;
+import com.example.will.protocol.user.response.UserLoginResponse;
 
 public class UserProviderImpl implements UserProvider {
 
@@ -137,6 +140,30 @@ public class UserProviderImpl implements UserProvider {
             @Override
             public void onSystemError(String errCode, String errMsg) {
                 callback.onModifyUserAvatarFail(errCode, errMsg);
+            }
+        });
+    }
+
+    @Override
+    public void userLogin(UserLoginRequest request, final UserLoginCallback callback) {
+        RequestManager.call(userApiService.userLogin(request), new HttpCallback<UserLoginResponse>() {
+            @Override
+            public void onSuccess(UserLoginResponse respObj) {
+                if (SUCCESS.equals(respObj.getCode())) {
+                    callback.onUserLoginSuccess(respObj);
+                } else {
+                    callback.onUserLoginFail(respObj.getCode(), respObj.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errCode, String errMsg) {
+                callback.onUserLoginFail(errCode, errMsg);
+            }
+
+            @Override
+            public void onSystemError(String errCode, String errMsg) {
+                callback.onUserLoginFail(errCode, errMsg);
             }
         });
     }

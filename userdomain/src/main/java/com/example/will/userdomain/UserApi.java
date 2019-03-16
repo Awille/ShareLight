@@ -5,11 +5,13 @@ import com.example.will.protocol.user.request.AddUserRequest;
 import com.example.will.protocol.user.request.ChangePasswordRequest;
 import com.example.will.protocol.user.request.ModifyUserAvatarRequest;
 import com.example.will.protocol.user.request.UpdateUserInfoRequest;
+import com.example.will.protocol.user.request.UserLoginRequest;
 import com.example.will.protocol.user.response.AddUserResponse;
 import com.example.will.protocol.user.response.ChangePasswordResponse;
 import com.example.will.protocol.user.response.ModifyUserAvatarResponse;
 import com.example.will.protocol.user.response.QueryUserResponse;
 import com.example.will.protocol.user.response.UpdateUserInfoResponse;
+import com.example.will.protocol.user.response.UserLoginResponse;
 
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -32,4 +34,7 @@ public interface UserApi {
 
     @PUT("restful//user.jsp")
     HttpCall<ModifyUserAvatarResponse> modifyUserAvatar(@Body ModifyUserAvatarRequest request);
+
+    @PUT("restful//user.jsp")
+    HttpCall<UserLoginResponse> userLogin(@Body UserLoginRequest request);
 }
