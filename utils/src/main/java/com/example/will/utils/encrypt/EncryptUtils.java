@@ -1,6 +1,6 @@
-package com.example.will.sharelight.encrypt;
+package com.example.will.utils.encrypt;
 
-import com.example.will.sharelight.TextUtils;
+import com.example.will.utils.TextUtils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

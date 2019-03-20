@@ -17,8 +17,8 @@ import com.example.will.musicprovider.MusicProvider;
 import com.example.will.protocol.user.User;
 import com.example.will.sharelight.R;
 import com.example.will.sharelight.TextUtils;
-import com.example.will.sharelight.encrypt.EncryptUtils;
 import com.example.will.sharelight.main.MainActivity;
+import com.example.will.utils.encrypt.EncryptUtils;
 import com.example.will.utils.toast.ToastUtils;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, LoginContract.LoginView {
