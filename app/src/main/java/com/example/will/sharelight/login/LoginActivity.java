@@ -1,6 +1,10 @@
 package com.example.will.sharelight.login;
 
+import android.content.Intent;
+import android.graphics.drawable.DrawableContainer;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -9,9 +13,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.will.musicprovider.MusicProvider;
+import com.example.will.protocol.user.User;
 import com.example.will.sharelight.R;
+import com.example.will.sharelight.TextUtils;
+import com.example.will.sharelight.encrypt.EncryptUtils;
+import com.example.will.sharelight.main.MainActivity;
+import com.example.will.utils.toast.ToastUtils;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener, LoginContract.LoginView {
     private TextView loginTitle;
     private EditText accountEdit;
     private LinearLayout nickPannel;
@@ -28,11 +38,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
      */
     private static int status = 0;
 
+    private LoginPresenterImpl loginPresenter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        loginPresenter = new LoginPresenterImpl(this);
         initView();
     }
 
@@ -51,12 +64,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         closeSignUpBt.setOnClickListener(this);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onClick(View v) {
         int viewId = v.getId();
         switch (viewId) {
             case R.id.action_bt:
-
+                clickActionButton();
                 break;
             case R.id.sign_up_bt:
                 changeStatus();
@@ -67,7 +81,52 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void clickActionButton() {
+        if (status == 0) {
+            String account = accountEdit.getText().toString();
+            String password = passwordEdit.getText().toString();
+            if (!TextUtils.isEmpty(account) && !TextUtils.isEmpty(password)) {
+                passwordEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_normal));
+                accountEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_normal));
+                loginPresenter.signIn(account, EncryptUtils.encryptByMd5(password));
+            } else {
+                ToastUtils.showWarningToast(this, "输入不能为空", ToastUtils.LENGTH_SHORT);
+                if (TextUtils.isEmpty(account) && !TextUtils.isEmpty(password)) {
+                    accountEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_wrong));
+                } else if (TextUtils.isEmpty(password) && !TextUtils.isEmpty(account)) {
+                    passwordEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_wrong));
+                } else {
+                    passwordEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_wrong));
+                    accountEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_wrong));
+                }
+            }
+        } else {
+            String account = accountEdit.getText().toString();
+            String nickName = nickNameEdit.getText().toString();
+            String password = passwordEdit.getText().toString();
+            if (!TextUtils.isEmpty(account) && !TextUtils.isEmpty(nickName) && !TextUtils.isEmpty(password)) {
+
+            } else {
+                ToastUtils.showWarningToast(this, "输入不能为空", ToastUtils.LENGTH_SHORT);
+                if (TextUtils.isEmpty(account)) {
+                    accountEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_wrong));
+                }
+                if (TextUtils.isEmpty(nickName)) {
+                    accountEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_wrong));
+                }
+                if (TextUtils.isEmpty(password)) {
+                    passwordEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_wrong));
+                }
+            }
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void changeStatus() {
+        passwordEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_normal));
+        accountEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_normal));
+        nickNameEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_normal));
         //current :sign in change to sign up
         if (status == 0) {
             status = 1;
@@ -88,4 +147,27 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public void onSignUpSuccess(User user) {
+        ToastUtils.showSuccessToast(this, "注册成功", ToastUtils.LENGTH_LONG);
+        changeStatus();
+    }
+
+    @Override
+    public void onSignUpFail(String errCode, String errMsg) {
+        ToastUtils.showErrorToast(this, errMsg, ToastUtils.LENGTH_LONG);
+    }
+
+    @Override
+    public void onSignInSuccess(User user) {
+        ToastUtils.showSuccessToast(this, "登录成功", ToastUtils.LENGTH_SHORT);
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onSignInFail(String errCode, String errMsg) {
+        ToastUtils.showErrorToast(this, errMsg, ToastUtils.LENGTH_LONG);
+    }
 }
