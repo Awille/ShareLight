@@ -86,9 +86,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (status == 0) {
             String account = accountEdit.getText().toString();
             String password = passwordEdit.getText().toString();
+            passwordEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_normal));
+            accountEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_normal));
             if (!TextUtils.isEmpty(account) && !TextUtils.isEmpty(password)) {
-                passwordEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_normal));
-                accountEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_normal));
                 loginPresenter.signIn(account, EncryptUtils.encryptByMd5(password));
             } else {
                 ToastUtils.showWarningToast(this, "输入不能为空", ToastUtils.LENGTH_SHORT);
@@ -105,15 +105,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             String account = accountEdit.getText().toString();
             String nickName = nickNameEdit.getText().toString();
             String password = passwordEdit.getText().toString();
+            accountEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_normal));
+            nickNameEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_normal));
+            passwordEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_normal));
             if (!TextUtils.isEmpty(account) && !TextUtils.isEmpty(nickName) && !TextUtils.isEmpty(password)) {
-
+                loginPresenter.signUp(account, nickName, EncryptUtils.encryptByMd5(password));
             } else {
                 ToastUtils.showWarningToast(this, "输入不能为空", ToastUtils.LENGTH_SHORT);
                 if (TextUtils.isEmpty(account)) {
                     accountEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_wrong));
                 }
                 if (TextUtils.isEmpty(nickName)) {
-                    accountEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_wrong));
+                    nickNameEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_wrong));
                 }
                 if (TextUtils.isEmpty(password)) {
                     passwordEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_wrong));
@@ -127,6 +130,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         passwordEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_normal));
         accountEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_normal));
         nickNameEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_normal));
+        passwordEdit.setText("");
+        accountEdit.setText("");
+        nickNameEdit.setText("");
         //current :sign in change to sign up
         if (status == 0) {
             status = 1;
