@@ -15,6 +15,7 @@ import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
 
+import com.example.will.network.R;
 import com.example.will.network.imageloader.disklrucache.DiskLruCache;
 
 import java.io.BufferedInputStream;
@@ -333,10 +334,20 @@ public class ImageLoader {
                             imageView.setImageBitmap(bitmap);
                         }
                     });
+                } else {
+                    imageView.setImageResource(R.drawable.imageload_fail);
                 }
-
             }
         });
+    }
+
+    public void bindLocalBitmap(Context context, final ImageView imageView, int resId, final int reqWidth, final int reqHeight) {
+        Bitmap bitmap = ImageResizer.decodeSampleBitmapFromResource(context.getResources(), resId, reqWidth, reqHeight);
+        if (bitmap != null) {
+            imageView.setImageBitmap(bitmap);
+        } else {
+            imageView.setImageResource(R.drawable.imageload_fail);
+        }
     }
 
 }

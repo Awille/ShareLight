@@ -13,12 +13,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.example.will.datacontext.MusicDataContext;
 import com.example.will.musicprovider.MusicProvider;
 import com.example.will.protocol.user.User;
 import com.example.will.sharelight.R;
 import com.example.will.sharelight.TextUtils;
 import com.example.will.sharelight.main.MainActivity;
 import com.example.will.utils.encrypt.EncryptUtils;
+import com.example.will.utils.sharepreferencehelper.SharePreferenceHelper;
 import com.example.will.utils.toast.ToastUtils;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, LoginContract.LoginView {
@@ -47,6 +51,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
         loginPresenter = new LoginPresenterImpl(this);
         initView();
+
+        if (SharePreferenceHelper.getLoginStatus() == true) {
+            MusicDataContext.getINSTANCE().setUser(JSON.parseObject(SharePreferenceHelper.getUserInfoSerial(), User.class));
+            enterMainActivity();
+        }
+    }
+
+
+    void enterMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     void initView() {
@@ -167,9 +182,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onSignInSuccess(User user) {
+        MusicDataContext.getINSTANCE().setUser(user);
+        SharePreferenceHelper.setLoginStatus(true);
+        SharePreferenceHelper.setUserInfo(user);
         ToastUtils.showSuccessToast(this, "登录成功", ToastUtils.LENGTH_SHORT);
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        enterMainActivity();
     }
 
     @Override
