@@ -8,4 +8,5 @@
     <color name="C_898989">#898989</color>
     <color name="F5F5F5">#F5F5F5</color>
     <color name="ff0000">#ff0000</color> <!-- 红色 -->
+    <color name="transparent">#00000000</color>
 </resources>

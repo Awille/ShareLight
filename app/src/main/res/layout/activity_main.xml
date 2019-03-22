@@ -12,13 +12,17 @@
 
 
         <LinearLayout
+            android:id="@+id/main_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
             <android.support.v7.widget.Toolbar
+                android:id="@+id/tool_bar"
+                android:background="@drawable/sign_in_bg"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_50">
+                android:layout_height="?attr/actionBarSize">
                 <android.support.design.widget.TabLayout
+                    android:id="@+id/tab_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -27,15 +31,12 @@
             </android.support.v7.widget.Toolbar>
 
             <android.support.v4.view.ViewPager
+                android:id="@+id/view_pager"
                 android:layout_width="match_parent"
-                android:layout_height="0dp">
+                android:layout_height="0dp"
+                android:layout_weight="1">
 
             </android.support.v4.view.ViewPager>
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/fake" />
 
         </LinearLayout>
 
@@ -44,9 +45,9 @@
             android:layout_width="200dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:background="@color/colorPrimaryDark"
+            android:background="@color/C_36648B"
             android:gravity="center_vertical"
-            app:maxTranslationX="@dimen/dp_80">
+            app:maxTranslationX="@dimen/dp_66">
 
             <LinearLayout
                 android:id="@+id/userInfo"
@@ -56,7 +57,7 @@
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
                 <com.example.will.utils.CircleImageView
-                    android:id="@+id/userAvatar"
+                    android:id="@+id/user_avatar"
                     android:layout_width="110dp"
                     android:layout_height="110dp"
                     android:layout_margin="10dp"
@@ -64,6 +65,7 @@
                     app:civ_border_width="2dp" />
 
                 <LinearLayout
+                    android:id="@+id/name_sex_pannel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -75,19 +77,119 @@
                         android:layout_height="@dimen/dp_20"
                         android:src="@drawable/unknow_sexual"/>
 
-                    <TextView
-                        android:id="@+id/userName"
+                    <com.example.will.utils.MyTextView
+                        android:id="@+id/user_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
                         android:text="Awille"
-                        android:textSize="@dimen/sp_20" />
+                        android:textSize="@dimen/sp_20"
+                        android:textColor="@color/FFFFFF"/>
                 </LinearLayout>
+            </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/change_avatar_pannel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/dp_20"
+                android:layout_marginLeft="@dimen/dp_20"
+                android:gravity="center_horizontal">
 
-
+                <ImageView
+                    android:layout_width="@dimen/dp_20"
+                    android:layout_height="@dimen/dp_20"
+                    android:src="@drawable/avatar"/>
+                <com.example.will.utils.MyTextView
+                    android:id="@+id/change_avatar_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dp_5"
+                    android:text="更改头像"
+                    android:textSize="@dimen/sp_20"
+                    android:textColor="@color/FFFFFF"/>
 
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/birth_pannel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/dp_20"
+                android:layout_marginLeft="@dimen/dp_20"
+                android:gravity="center_horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_20"
+                    android:layout_height="@dimen/dp_20"
+                    android:src="@drawable/calendar"/>
+                <com.example.will.utils.MyTextView
+                    android:id="@+id/birth_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dp_5"
+                    android:text="1997-02-04"
+                    android:textSize="@dimen/sp_20"
+                    android:textColor="@color/FFFFFF"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/upload_pannel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/dp_20"
+                android:layout_marginLeft="@dimen/dp_20"
+                android:gravity="center_horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_20"
+                    android:layout_height="@dimen/dp_20"
+                    android:src="@drawable/upload"/>
+                <com.example.will.utils.MyTextView
+                    android:id="@+id/upload_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dp_5"
+                    android:text="上传资源"
+                    android:textSize="@dimen/sp_20"
+                    android:textColor="@color/FFFFFF"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/signature_pannel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/dp_20"
+                android:layout_marginLeft="@dimen/dp_20"
+                android:gravity="center_horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_20"
+                    android:layout_height="@dimen/dp_20"
+                    android:src="@drawable/label"/>
+                <com.example.will.utils.MyTextView
+                    android:id="@+id/signature_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dp_5"
+                    android:text="个性签名"
+                    android:textSize="@dimen/sp_20"
+                    android:textColor="@color/FFFFFF"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_marginTop="@dimen/dp_20"
+                android:layout_marginLeft="@dimen/dp_20"
+                android:id="@+id/description"
+                android:layout_width="@dimen/dp_80"
+                android:layout_height="wrap_content" />
         </com.github.mzule.fantasyslide.SideBar>
 
     </com.github.mzule.fantasyslide.FantasyDrawerLayout>

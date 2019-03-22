@@ -19,8 +19,8 @@ import com.example.will.datacontext.MusicDataContext;
 import com.example.will.musicprovider.MusicProvider;
 import com.example.will.protocol.user.User;
 import com.example.will.sharelight.R;
-import com.example.will.sharelight.TextUtils;
 import com.example.will.sharelight.main.MainActivity;
+import com.example.will.utils.TextUtils;
 import com.example.will.utils.encrypt.EncryptUtils;
 import com.example.will.utils.sharepreferencehelper.SharePreferenceHelper;
 import com.example.will.utils.toast.ToastUtils;
@@ -60,7 +60,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
     void enterMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent();
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setClass(this, MainActivity.class);
         startActivity(intent);
     }
 
