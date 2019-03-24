@@ -22,6 +22,7 @@ import com.example.will.sharelight.R;
 import com.example.will.sharelight.main.MainActivity;
 import com.example.will.utils.TextUtils;
 import com.example.will.utils.encrypt.EncryptUtils;
+import com.example.will.utils.loadingutils.LoadingUtils;
 import com.example.will.utils.sharepreferencehelper.SharePreferenceHelper;
 import com.example.will.utils.toast.ToastUtils;
 
@@ -106,6 +107,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             passwordEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_normal));
             accountEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_normal));
             if (!TextUtils.isEmpty(account) && !TextUtils.isEmpty(password)) {
+                LoadingUtils.getINSTANCE(this).showLoadingViewGhost();
                 loginPresenter.signIn(account, EncryptUtils.encryptByMd5(password));
             } else {
                 ToastUtils.showWarningToast(this, "输入不能为空", ToastUtils.LENGTH_SHORT);
@@ -126,6 +128,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             nickNameEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_normal));
             passwordEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_normal));
             if (!TextUtils.isEmpty(account) && !TextUtils.isEmpty(nickName) && !TextUtils.isEmpty(password)) {
+                LoadingUtils.getINSTANCE(this).showLoadingViewGhost();
                 loginPresenter.signUp(account, nickName, EncryptUtils.encryptByMd5(password));
             } else {
                 ToastUtils.showWarningToast(this, "输入不能为空", ToastUtils.LENGTH_SHORT);
@@ -173,12 +176,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onSignUpSuccess(User user) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
         ToastUtils.showSuccessToast(this, "注册成功", ToastUtils.LENGTH_LONG);
         changeStatus();
     }
 
     @Override
     public void onSignUpFail(String errCode, String errMsg) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
         ToastUtils.showErrorToast(this, errMsg, ToastUtils.LENGTH_LONG);
     }
 
@@ -187,12 +192,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         MusicDataContext.getINSTANCE().setUser(user);
         SharePreferenceHelper.setLoginStatus(true);
         SharePreferenceHelper.setUserInfo(user);
+        LoadingUtils.getINSTANCE(this).dismisDialog();
         ToastUtils.showSuccessToast(this, "登录成功", ToastUtils.LENGTH_SHORT);
         enterMainActivity();
     }
 
     @Override
     public void onSignInFail(String errCode, String errMsg) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
         ToastUtils.showErrorToast(this, errMsg, ToastUtils.LENGTH_LONG);
     }
 }

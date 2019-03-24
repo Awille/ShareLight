@@ -60,7 +60,6 @@ public class LoadingUtils {
             lvNews.stopAnim();
             loadingDialog.dismiss();
         }
-
     }
 
     private LoadingUtils(Context context) {
@@ -74,11 +73,6 @@ public class LoadingUtils {
         loadingDialog.setContentView(view);
         initView();
 
-
-//        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-//        lp.copyFrom(loadingDialog.getWindow().getAttributes());
-//        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
-//        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         loadingDialog.getWindow().setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
         loadingDialog.getWindow().setBackgroundDrawableResource(R.color.transparent);
         loadingDialog.setCancelable(false);
