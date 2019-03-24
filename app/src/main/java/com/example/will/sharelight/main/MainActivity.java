@@ -27,6 +27,7 @@ import com.example.will.network.imageloader.ImageLoader;
 import com.example.will.network.retrofit.RetrofitMrg;
 import com.example.will.protocol.user.User;
 import com.example.will.sharelight.R;
+import com.example.will.sharelight.main.dialog.UserInfoEditDialogMrg;
 import com.example.will.utils.CircleImageView;
 import com.example.will.utils.MyTextView;
 import com.example.will.utils.TextUtils;
@@ -61,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private Context context;
 
+    private UserInfoEditDialogMrg userInfoEditDialogMrg;
+
     private MyFragmentPagerAdapter fragmentPagerAdapter;
 
     private static HomeFragment homeFragment;
@@ -76,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mainPresenter = new MainPresenterImpl(this);
+        userInfoEditDialogMrg = UserInfoEditDialogMrg.build(this, mainPresenter);
         initView();
         toolBarInit();
         setLeftSideBarListener();
@@ -205,12 +209,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 int viewId = view.getId();
                 switch (viewId) {
                     case R.id.userInfo:
-                        Log.e(TAG, "名字、性别修改");
-                        LoadingUtils.getINSTANCE(context).showLoadingViewNews();
+                        editUserInfo(1);
                         break;
                     case R.id.change_avatar_pannel:
-                        Log.e(TAG, "更改头像");
-                        LoadingUtils.getINSTANCE(context).showLoadingViewGhost();
+
                         break;
                     case R.id.birth_pannel:
                         showDatePickerDialog();
@@ -219,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Log.e(TAG, "上传");
                         break;
                     case R.id.signature_pannel:
-                        Log.e(TAG, "签名");
+                        editUserInfo(2);
                         break;
                 }
                 return false;
@@ -230,6 +232,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
+    }
+
+    private void editUserInfo(int mode) {
+        userInfoEditDialogMrg.showUserInfoEditDialog(mode);
     }
 
     private void showDatePickerDialog() {
@@ -261,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ToastUtils.showSuccessToast(this, "更新成功", ToastUtils.LENGTH_SHORT);
         //更新上下文
         MusicDataContext.getINSTANCE().setUser(user);
-        birthText.setText(user.getBirth());
+        userInfoEditDialogMrg.dimissDialog();
     }
 
     @Override

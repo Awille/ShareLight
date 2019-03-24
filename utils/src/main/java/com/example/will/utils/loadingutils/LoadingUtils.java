@@ -76,7 +76,6 @@ public class LoadingUtils {
         View view = LayoutInflater.from(context).inflate(R.layout.loading_layout, null);
         loadingDialog.setContentView(view);
         initView();
-
         loadingDialog.getWindow().setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
         loadingDialog.getWindow().setBackgroundDrawableResource(R.color.transparent);
         loadingDialog.setCancelable(false);
