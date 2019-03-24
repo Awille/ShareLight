@@ -7,6 +7,8 @@ public class LoginContract {
     public interface LoginPresenter {
         void signUp(String account, String nickName, String password);
         void signIn(String account, String password);
+
+        void pullUserInfo(String account);
     }
 
     public interface LoginView {
@@ -15,6 +17,9 @@ public class LoginContract {
 
         void onSignInSuccess(User user);
         void onSignInFail(String errCode, String errMsg);
+
+        void onPullUserInfoSuccess(User user);
+        void onPullUserInfoFail(String errCode, String errMsg);
 
     }
 }

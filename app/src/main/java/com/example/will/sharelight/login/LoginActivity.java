@@ -21,6 +21,7 @@ import com.example.will.protocol.user.User;
 import com.example.will.sharelight.R;
 import com.example.will.sharelight.main.MainActivity;
 import com.example.will.utils.TextUtils;
+import com.example.will.utils.TimeUtils;
 import com.example.will.utils.encrypt.EncryptUtils;
 import com.example.will.utils.loadingutils.LoadingUtils;
 import com.example.will.utils.sharepreferencehelper.SharePreferenceHelper;
@@ -55,7 +56,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         if (SharePreferenceHelper.getLoginStatus() == true) {
             MusicDataContext.getINSTANCE().setUser(JSON.parseObject(SharePreferenceHelper.getUserInfoSerial(), User.class));
-            enterMainActivity();
+            loginPresenter.pullUserInfo(MusicDataContext.getINSTANCE().getUser().getAccount());
+            LoadingUtils.getINSTANCE(this).showLoadingViewGhost();
         }
     }
 
@@ -201,5 +203,27 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onSignInFail(String errCode, String errMsg) {
         LoadingUtils.getINSTANCE(this).dismisDialog();
         ToastUtils.showErrorToast(this, errMsg, ToastUtils.LENGTH_LONG);
+    }
+
+    @Override
+    public void onPullUserInfoSuccess(User user) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        if (MusicDataContext.getINSTANCE().getUser().getPassword().equals(user.getPassword())) {
+            //直接登录
+            MusicDataContext.getINSTANCE().setUser(user);
+            ToastUtils.showSuccessToast(this, "自动登录", ToastUtils.LENGTH_SHORT);
+            SharePreferenceHelper.setUserInfo(user);
+            enterMainActivity();
+        } else {
+            SharePreferenceHelper.setLoginStatus(false);
+            ToastUtils.showErrorToast(this, "缓存信息失效，请重新登录", ToastUtils.LENGTH_SHORT);
+        }
+    }
+
+    @Override
+    public void onPullUserInfoFail(String errCode, String errMsg) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        SharePreferenceHelper.setLoginStatus(false);
+        ToastUtils.showErrorToast(this, "缓存信息失效，请重新登录", ToastUtils.LENGTH_SHORT);
     }
 }

@@ -36,6 +36,7 @@ dependencies {
     implementation project(':utils')
     implementation project(':datacontext')
     implementation project(':datetimepicker')
+    implementation project(':network')
     implementation 'com.alibaba:fastjson:1.2.55'
     implementation 'com.github.mzule.fantasyslide:library:1.0.5'
     implementation 'com.android.support:design:28.0.0'

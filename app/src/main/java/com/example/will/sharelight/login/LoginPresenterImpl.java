@@ -6,12 +6,14 @@ import com.alibaba.fastjson.JSON;
 import com.example.will.musicprovider.MusicProvider;
 import com.example.will.protocol.user.User;
 import com.example.will.protocol.user.callbcak.AddUserCallback;
+import com.example.will.protocol.user.callbcak.QueryUserCallback;
 import com.example.will.protocol.user.callbcak.UserLoginCallback;
 import com.example.will.protocol.user.request.AddUserRequest;
 import com.example.will.protocol.user.request.AddUserRequestData;
 import com.example.will.protocol.user.request.UserLoginRequest;
 import com.example.will.protocol.user.request.UserLoginRequestData;
 import com.example.will.protocol.user.response.AddUserResponse;
+import com.example.will.protocol.user.response.QueryUserResponse;
 import com.example.will.protocol.user.response.UserLoginResponse;
 
 public class LoginPresenterImpl implements LoginContract.LoginPresenter {
@@ -68,6 +70,21 @@ public class LoginPresenterImpl implements LoginContract.LoginPresenter {
             @Override
             public void onUserLoginFail(String errCode, String errMsg) {
                 loginView.onSignInFail(errCode, errMsg);
+            }
+        });
+    }
+
+    @Override
+    public void pullUserInfo(String account) {
+        MusicProvider.getINSTANCE().getUserProvider().queryUser(account, new QueryUserCallback() {
+            @Override
+            public void onQueryUserSuccess(QueryUserResponse response) {
+                loginView.onPullUserInfoSuccess(response.getData());
+            }
+
+            @Override
+            public void onQueryUserFail(String errCode, String errMsg) {
+                loginView.onPullUserInfoFail(errCode, errMsg);
             }
         });
     }

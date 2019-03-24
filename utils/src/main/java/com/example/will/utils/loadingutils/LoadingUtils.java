@@ -15,20 +15,24 @@ public class LoadingUtils {
 
     private static LoadingUtils INSTANCE;
 
-    private Context context;
+    private static Context context;
 
     private Dialog loadingDialog;
 
     private LVNews lvNews;
     private LVGhost lvGhost;
 
-    public static LoadingUtils getINSTANCE(Context context) {
+    public static LoadingUtils getINSTANCE(Context inContext) {
         if (INSTANCE == null) {
             synchronized (LoadingUtils.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = new LoadingUtils(context);
+                    INSTANCE = new LoadingUtils(inContext);
                 }
             }
+        }
+        //上下文变更
+        if (context != inContext) {
+            INSTANCE = new LoadingUtils(inContext);
         }
         return INSTANCE;
     }

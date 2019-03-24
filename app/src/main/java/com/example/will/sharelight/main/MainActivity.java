@@ -22,14 +22,24 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.will.datacontext.MusicDataContext;
+import com.example.will.network.imageloader.ImageLoader;
+import com.example.will.network.retrofit.RetrofitMrg;
+import com.example.will.protocol.user.User;
 import com.example.will.sharelight.R;
 import com.example.will.utils.CircleImageView;
 import com.example.will.utils.MyTextView;
+import com.example.will.utils.TextUtils;
+import com.example.will.utils.TimeUtils;
 import com.example.will.utils.loadingutils.LoadingUtils;
+import com.example.will.utils.toast.ToastUtils;
 import com.github.mzule.fantasyslide.FantasyListener;
 import com.github.mzule.fantasyslide.SideBar;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+import java.util.Calendar;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, DatePickerDialog.OnDateSetListener, MainContract.MainView {
 
     private static final String TAG = "MainActivity";
 
@@ -59,10 +69,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TabLayout.Tab home;
     private TabLayout.Tab square;
 
+    private MainPresenterImpl mainPresenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mainPresenter = new MainPresenterImpl(this);
         initView();
         toolBarInit();
         setLeftSideBarListener();
@@ -149,9 +162,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return squareFragment;
     }
 
+    private void updateSideBar() {
+        birthText.setText(MusicDataContext.getINSTANCE().getUser().getBirth());
+        description.setText(MusicDataContext.getINSTANCE().getUser().getSignature());
+        userName.setText(MusicDataContext.getINSTANCE().getUser().getNickName());
+        int userGender = MusicDataContext.getINSTANCE().getUser().getGender();
+        if (userGender == 1) {
+            sexual.setImageResource(R.drawable.male);
+        } else if (userGender == 2) {
+            sexual.setImageResource(R.drawable.female);
+        } else {
+            sexual.setImageResource(R.drawable.unknow_sexual);
+        }
+        String avatarUrl = MusicDataContext.getINSTANCE().getUser().getAvatarUrl();
+        if (!TextUtils.isEmpty(avatarUrl)) {
+            ImageLoader.build(this).bindBitmap(RetrofitMrg.baseUrl + avatarUrl, userAvatar);
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
+            updateSideBar();
             if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                 drawerLayout.closeDrawer(GravityCompat.START);
             } else {
@@ -181,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         LoadingUtils.getINSTANCE(context).showLoadingViewGhost();
                         break;
                     case R.id.birth_pannel:
-                        Log.e(TAG, "生日");
+                        showDatePickerDialog();
                         break;
                     case R.id.upload_pannel:
                         Log.e(TAG, "上传");
@@ -200,4 +232,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
+    private void showDatePickerDialog() {
+        Calendar now = Calendar.getInstance();
+        String birth = MusicDataContext.getINSTANCE().getUser().getBirth();
+        DatePickerDialog datePickerDialog = DatePickerDialog.newInstance(this,
+                Integer.parseInt(birth.substring(0,4)),
+                Integer.parseInt(birth.substring(5,7)) - 1,
+                Integer.parseInt(birth.substring(8,10)));
+        datePickerDialog.show(getSupportFragmentManager(), "DatePickerDialog");
+    }
+
+
+
+
+
+    @SuppressLint("NewApi")
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+        User temp = MusicDataContext.getINSTANCE().getUser();
+        temp.setBirth(TimeUtils.int2StringFormat1(year, monthOfYear, dayOfMonth));
+        mainPresenter.updateUserInfo(temp);
+        LoadingUtils.getINSTANCE(this).showLoadingViewGhost();
+    }
+
+    @Override
+    public void onUpdateUserInfoSuccess(User user) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        ToastUtils.showSuccessToast(this, "更新成功", ToastUtils.LENGTH_SHORT);
+        //更新上下文
+        MusicDataContext.getINSTANCE().setUser(user);
+        birthText.setText(user.getBirth());
+    }
+
+    @Override
+    public void onUpdateUserInfoFail(String errCode, String errMsg) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        ToastUtils.showErrorToast(this, errMsg, ToastUtils.LENGTH_LONG);
+
+    }
 }

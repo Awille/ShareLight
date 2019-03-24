@@ -62,7 +62,7 @@ public class ImageLoader {
 
     //TODO 加载前图片与加载后图片适应
 
-    public static final ThreadFactory mThreadFactory = new ThreadFactory() {
+    private static final ThreadFactory mThreadFactory = new ThreadFactory() {
         private AtomicInteger mCount = new AtomicInteger(1);
         @Override
         public Thread newThread(Runnable r) {
@@ -70,7 +70,7 @@ public class ImageLoader {
         }
     };
 
-    public static final Executor IMAGE_LOADER_THREAD_POOL = new ThreadPoolExecutor(
+    private static final Executor IMAGE_LOADER_THREAD_POOL = new ThreadPoolExecutor(
             CORE_POOL_SIZE,
             MAXIMUM_POOL_SIZE,
             KEEP_ALIVE,
@@ -78,7 +78,7 @@ public class ImageLoader {
             new LinkedBlockingQueue<Runnable>(),
             mThreadFactory);
 
-    public static Handler mMainHandler = new Handler(Looper.getMainLooper());
+    private static Handler mMainHandler = new Handler(Looper.getMainLooper());
 
 
     private Context mContext;
