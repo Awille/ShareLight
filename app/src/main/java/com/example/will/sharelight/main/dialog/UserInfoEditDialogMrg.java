@@ -159,7 +159,6 @@ public class UserInfoEditDialogMrg implements View.OnClickListener {
         if (mode == 1) {
             //只修改姓名 性别
             String nickName = userNameEdit.getText().toString();
-            int gender = genderSelect;
             if (TextUtils.isEmpty(nickName)){
                 ToastUtils.showWarningToast(mContext, "昵称不能为空", ToastUtils.LENGTH_SHORT);
             } else {

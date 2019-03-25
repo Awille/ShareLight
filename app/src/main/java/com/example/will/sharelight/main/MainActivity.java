@@ -2,6 +2,7 @@ package com.example.will.sharelight.main;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -27,6 +28,7 @@ import com.example.will.network.imageloader.ImageLoader;
 import com.example.will.network.retrofit.RetrofitMrg;
 import com.example.will.protocol.user.User;
 import com.example.will.sharelight.R;
+import com.example.will.sharelight.main.dialog.ImageSelectChannelDialogMrg;
 import com.example.will.sharelight.main.dialog.UserInfoEditDialogMrg;
 import com.example.will.utils.CircleImageView;
 import com.example.will.utils.MyTextView;
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Context context;
 
     private UserInfoEditDialogMrg userInfoEditDialogMrg;
+    private ImageSelectChannelDialogMrg imageSelectChannelDialogMrg;
 
     private MyFragmentPagerAdapter fragmentPagerAdapter;
 
@@ -80,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         mainPresenter = new MainPresenterImpl(this);
         userInfoEditDialogMrg = UserInfoEditDialogMrg.build(this, mainPresenter);
+        imageSelectChannelDialogMrg = new ImageSelectChannelDialogMrg(this);
         initView();
         toolBarInit();
         setLeftSideBarListener();
@@ -212,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         editUserInfo(1);
                         break;
                     case R.id.change_avatar_pannel:
-
+                        imageSelectChannelDialogMrg.showDialog();
                         break;
                     case R.id.birth_pannel:
                         showDatePickerDialog();
@@ -248,6 +252,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         datePickerDialog.show(getSupportFragmentManager(), "DatePickerDialog");
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case ImageSelectChannelDialogMrg.TAKE_PHOTO:
+                if (requestCode == RESULT_OK) {
+
+                }
+                break;
+        }
+    }
+
 
 
 
@@ -274,6 +290,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onUpdateUserInfoFail(String errCode, String errMsg) {
         LoadingUtils.getINSTANCE(this).dismisDialog();
         ToastUtils.showErrorToast(this, errMsg, ToastUtils.LENGTH_LONG);
-
     }
 }

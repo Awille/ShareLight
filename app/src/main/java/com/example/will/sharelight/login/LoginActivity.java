@@ -1,10 +1,13 @@
 package com.example.will.sharelight.login;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.DrawableContainer;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -46,6 +49,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private LoginPresenterImpl loginPresenter;
 
+    private static final int REQUEST_PERMISSION =1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +58,36 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
         loginPresenter = new LoginPresenterImpl(this);
         initView();
+        checkPermission();
+    }
 
-        if (SharePreferenceHelper.getLoginStatus() == true) {
-            MusicDataContext.getINSTANCE().setUser(JSON.parseObject(SharePreferenceHelper.getUserInfoSerial(), User.class));
-            loginPresenter.pullUserInfo(MusicDataContext.getINSTANCE().getUser().getAccount());
-            LoadingUtils.getINSTANCE(this).showLoadingViewGhost();
+    private void checkPermission() {
+        //检查权限（NEED_PERMISSION）是否被授权 PackageManager.PERMISSION_GRANTED表示同意授权
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE )
+                != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA )
+                != PackageManager.PERMISSION_GRANTED) {
+            //用户已经拒绝过一次，再次弹出权限申请对话框需要给用户一个解释
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission
+                    .WRITE_EXTERNAL_STORAGE)
+                    || !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)
+                    || !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                ToastUtils.showWarningToast(this, "请手动开启相关权限", ToastUtils.LENGTH_LONG);
+            }
+            //申请权限
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.CAMERA},
+                    REQUEST_PERMISSION);
+        } else {
+            if (SharePreferenceHelper.getLoginStatus() == true) {
+                MusicDataContext.getINSTANCE().setUser(JSON.parseObject(SharePreferenceHelper.getUserInfoSerial(), User.class));
+                loginPresenter.pullUserInfo(MusicDataContext.getINSTANCE().getUser().getAccount());
+                LoadingUtils.getINSTANCE(this).showLoadingViewGhost();
+            }
         }
     }
 
@@ -144,6 +174,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     passwordEdit.setBackground(getResources().getDrawable(R.drawable.edit_text_background_wrong));
                 }
             }
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        boolean flag = true;
+        if (requestCode == REQUEST_PERMISSION) {
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    flag = false;
+                }
+            }
+        }
+        if (flag) {
+            if (SharePreferenceHelper.getLoginStatus() == true) {
+                MusicDataContext.getINSTANCE().setUser(JSON.parseObject(SharePreferenceHelper.getUserInfoSerial(), User.class));
+                loginPresenter.pullUserInfo(MusicDataContext.getINSTANCE().getUser().getAccount());
+                LoadingUtils.getINSTANCE(this).showLoadingViewGhost();
+            }
+        } else {
+            ToastUtils.showWarningToast(this, "权限未获得，程序可能崩溃", ToastUtils.LENGTH_LONG);
         }
     }
 
