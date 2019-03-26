@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -261,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case ImageSelectChannelDialogMrg.TAKE_PHOTO:
+            case ImageSelectChannelDialogMrg.TAKE_PHOTO: {
                 if (resultCode == RESULT_OK) {
                     try {
                         Bitmap bitmap = ImageResizer.decodeSampleBitmapFromStream(getContentResolver().openInputStream(
@@ -279,6 +280,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
                 break;
+            }
+            case ImageSelectChannelDialogMrg.TAKE_ALBUM: {
+                if (resultCode == RESULT_OK) {
+                    try {
+                        Uri imgUri = data.getData();
+                        if (imgUri != null) {
+                            Bitmap bitmap = ImageResizer.decodeSampleBitmapFromStream(getContentResolver().openInputStream(imgUri),
+                                    200, 200);
+                            if (bitmap == null) {
+                                ToastUtils.showErrorToast(this, "相机错误", ToastUtils.LENGTH_LONG);
+                                imageSelectChannelDialogMrg.dismissDialog();
+                            } else {
+                                imageSelectChannelDialogMrg.finishSelect(bitmap);
+                            }
+                        }
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                        ToastUtils.showErrorToast(this, "相册错误", ToastUtils.LENGTH_SHORT);
+                        imageSelectChannelDialogMrg.dismissDialog();
+                    }
+                }
+                break;
+            }
         }
     }
 

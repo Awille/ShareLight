@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ProxyInfo;
 import android.net.Uri;
 import android.os.Build;
@@ -125,6 +126,7 @@ public class ImageSelectChannelDialogMrg implements View.OnClickListener {
                 break;
             case R.id.album_pannel:
                 Log.e(TAG, "点击相册");
+                clickAlbum();
                 break;
             case R.id.close:
                 dismissDialog();
@@ -133,6 +135,7 @@ public class ImageSelectChannelDialogMrg implements View.OnClickListener {
                 dismissDialog();
                 break;
             case R.id.certain:
+                Log.e(TAG, "点击确定");
                 clickCertain();
                 break;
         }
@@ -142,10 +145,17 @@ public class ImageSelectChannelDialogMrg implements View.OnClickListener {
         LoadingUtils.getINSTANCE(mContext).showLoadingViewGhost();
         UploadFile uploadFile = new UploadFile();
         uploadFile.setAccount(MusicDataContext.getINSTANCE().getUser().getAccount());
-        //随便填 我的后台会重新命名， 但后缀要正确
+        //随便填 我的后台会重新命名， 但后缀要正确,即文件格式一定要正确
         uploadFile.setFileName("user_avatar.jpg");
         uploadFile.setFileStr(FileUtils.bitmapToBase64(currentBitmap));
         mainPresenter.changeUserAvatar(uploadFile);
+    }
+
+    private void clickAlbum() {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_PICK);
+        intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+        ((Activity)mContext).startActivityForResult(intent, TAKE_ALBUM);
     }
 
     private void clickCamera() {

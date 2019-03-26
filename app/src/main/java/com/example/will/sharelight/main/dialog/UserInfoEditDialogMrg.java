@@ -22,7 +22,6 @@ import com.example.will.utils.CircleImageView;
 import com.example.will.utils.TextUtils;
 import com.example.will.utils.loadingutils.LoadingUtils;
 import com.example.will.utils.segmentControl.SegmentControl;
-import com.example.will.utils.smoothcheckbox.SmoothCheckBox;
 import com.example.will.utils.toast.ToastUtils;
 
 public class UserInfoEditDialogMrg implements View.OnClickListener {
