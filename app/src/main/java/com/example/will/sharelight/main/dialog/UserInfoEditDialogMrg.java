@@ -117,7 +117,7 @@ public class UserInfoEditDialogMrg implements View.OnClickListener {
         userNameEdit.setText(user.getNickName());
         userNameEdit.setSelection(user.getNickName().length());
         if (!TextUtils.isEmpty(user.getAvatarUrl())) {
-            ImageLoader.build(mContext).bindBitmap(RetrofitMrg.baseUrl + user.getAvatarUrl(), userAvatar);
+            ImageLoader.build(mContext).bindBitmap(RetrofitMrg.baseUrl + user.getAvatarUrl(), userAvatar, 200, 200);
         }
 
         if (!TextUtils.isEmpty(user.getSignature())) {

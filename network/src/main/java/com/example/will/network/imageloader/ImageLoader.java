@@ -239,6 +239,14 @@ public class ImageLoader {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return bitmap;
     }
@@ -300,6 +308,9 @@ public class ImageLoader {
         }
         if (bitmap == null &&!mIsDiskLruCacheCreated) {
             Log.e(TAG, "diskcache is not created");
+            bitmap = downloadBitmapFromUrl(uri);
+        }
+        if (bitmap == null) {
             bitmap = downloadBitmapFromUrl(uri);
         }
         return bitmap;

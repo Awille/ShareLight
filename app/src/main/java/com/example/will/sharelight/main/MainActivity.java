@@ -3,6 +3,8 @@ package com.example.will.sharelight.main;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -25,6 +27,7 @@ import android.widget.TextView;
 
 import com.example.will.datacontext.MusicDataContext;
 import com.example.will.network.imageloader.ImageLoader;
+import com.example.will.network.imageloader.ImageResizer;
 import com.example.will.network.retrofit.RetrofitMrg;
 import com.example.will.protocol.user.User;
 import com.example.will.sharelight.R;
@@ -40,6 +43,8 @@ import com.github.mzule.fantasyslide.FantasyListener;
 import com.github.mzule.fantasyslide.SideBar;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, DatePickerDialog.OnDateSetListener, MainContract.MainView {
@@ -83,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         mainPresenter = new MainPresenterImpl(this);
         userInfoEditDialogMrg = UserInfoEditDialogMrg.build(this, mainPresenter);
-        imageSelectChannelDialogMrg = new ImageSelectChannelDialogMrg(this);
+        imageSelectChannelDialogMrg = new ImageSelectChannelDialogMrg(this, mainPresenter);
         initView();
         toolBarInit();
         setLeftSideBarListener();
@@ -184,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         String avatarUrl = MusicDataContext.getINSTANCE().getUser().getAvatarUrl();
         if (!TextUtils.isEmpty(avatarUrl)) {
-            ImageLoader.build(this).bindBitmap(RetrofitMrg.baseUrl + avatarUrl, userAvatar);
+            ImageLoader.build(this).bindBitmap(RetrofitMrg.baseUrl + avatarUrl, userAvatar, 200, 200);
         }
     }
 
@@ -257,8 +262,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case ImageSelectChannelDialogMrg.TAKE_PHOTO:
-                if (requestCode == RESULT_OK) {
-
+                if (resultCode == RESULT_OK) {
+                    try {
+                        Bitmap bitmap = ImageResizer.decodeSampleBitmapFromStream(getContentResolver().openInputStream(
+                                imageSelectChannelDialogMrg.getImgUri()), 200, 200);
+                        if (bitmap == null) {
+                            ToastUtils.showErrorToast(this, "相机错误", ToastUtils.LENGTH_LONG);
+                            imageSelectChannelDialogMrg.dismissDialog();
+                        } else {
+                            imageSelectChannelDialogMrg.finishSelect(bitmap);
+                        }
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                        ToastUtils.showErrorToast(this, "相机错误", ToastUtils.LENGTH_SHORT);
+                        imageSelectChannelDialogMrg.dismissDialog();
+                    }
                 }
                 break;
         }
@@ -290,5 +308,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onUpdateUserInfoFail(String errCode, String errMsg) {
         LoadingUtils.getINSTANCE(this).dismisDialog();
         ToastUtils.showErrorToast(this, errMsg, ToastUtils.LENGTH_LONG);
+    }
+
+    @Override
+    public void onChangeUserAvatarSuccess() {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        imageSelectChannelDialogMrg.dismissDialog();
+        ToastUtils.showSuccessToast(this, "上传成功", ToastUtils.LENGTH_LONG);
+    }
+
+    @Override
+    public void onChangeUserAvatarFail(String errCode, String errMsg) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        imageSelectChannelDialogMrg.dismissDialog();
+        ToastUtils.showErrorToast(this, "上传失败", ToastUtils.LENGTH_LONG);
     }
 }

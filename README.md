@@ -7,4 +7,6 @@
 ### 2、关于hashmap、 linkedhashmap、concurrenthashmap、hashtable、Treemap
 的选择问题
 
+### 3、图片缓存与更新之间的关系要怎么把握？
+
 

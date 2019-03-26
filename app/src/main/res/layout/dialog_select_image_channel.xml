@@ -13,13 +13,61 @@
 
 
     <LinearLayout
+        android:id="@+id/img_show_pannel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginBottom="@dimen/dp_20">
+
+        <com.example.will.utils.CircleImageView
+            android:id="@+id/selected_img"
+            android:layout_width="@dimen/dp_110"
+            android:layout_height="@dimen/dp_110"
+            android:src="@drawable/image_loading"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginRight="@dimen/dp_20"
+            android:layout_marginLeft="@dimen/dp_20"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/dp_10"
+                android:layout_weight="1"
+                android:text="取消"
+                android:textColor="@color/FFFFFF"
+                android:textSize="@dimen/sp_20"
+                android:background="@drawable/button_background"/>
+
+            <Button
+                android:id="@+id/certain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:layout_weight="1"
+                android:textColor="@color/FFFFFF"
+                android:textSize="@dimen/sp_20"
+                android:background="@drawable/button_background"
+                android:text="确定"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/select_pannel"
         android:orientation="horizontal"
         android:layout_marginTop="@dimen/dp_30"
         android:layout_marginBottom="@dimen/dp_20"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true">
+        android:layout_centerHorizontal="true"
+        android:visibility="gone">
         <LinearLayout
             android:id="@+id/album_pannel"
             android:layout_width="wrap_content"

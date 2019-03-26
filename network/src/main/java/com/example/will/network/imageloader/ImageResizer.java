@@ -5,7 +5,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class ImageResizer {
     private static final String TAG = "ImageResizer";
@@ -26,6 +30,49 @@ public class ImageResizer {
         options.inSampleSize = calculateInSampleSize(options, reqWidht, reqHeight);
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFileDescriptor(fd, null, options);
+    }
+
+    public static Bitmap decodeSampleBitmapFromStream(InputStream in, int reqWidth, int reqHeight) {
+        //inputstream对象只能被读取一次
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        InputStream inputStream1 = null;
+        InputStream inputStream2 = null;
+        byte[] buffer = new byte[1024];
+        int len;
+        try {
+            while ((len = in.read(buffer)) != -1) {
+                byteArrayOutputStream.write(buffer, 0, len);
+            }
+            byteArrayOutputStream.flush();
+            inputStream1 = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            inputStream2 = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            Bitmap test = BitmapFactory.decodeStream(inputStream1, null, options);
+            options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+            options.inJustDecodeBounds = false;
+            return BitmapFactory.decodeStream(inputStream2, null, options);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+                if (inputStream1 != null) {
+                    inputStream1.close();
+                }
+                if (inputStream2 != null) {
+                    inputStream2.close();
+                }
+                if (byteArrayOutputStream != null) {
+                    byteArrayOutputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     /**
