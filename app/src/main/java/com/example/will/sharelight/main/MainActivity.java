@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -203,7 +204,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } else {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
+        } else if (item.getItemId() == R.id.menu_add_song_list) {
+            Log.e(TAG, "添加歌单");
+        } else if (item.getItemId() == R.id.menu_upload) {
+            Log.e(TAG, "点击创作中心");
         }
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.tool_bar_menu, menu);
         return true;
     }
 
