@@ -75,6 +75,7 @@ public class ImageSelectChannelDialogMrg implements View.OnClickListener {
         lp.width = (int) width;
         dialog.getWindow().setAttributes(lp);
         dialog.setCancelable(false);
+        dialog.getWindow().setBackgroundDrawableResource(R.color.transparent);
         dialog.show();
     }
 

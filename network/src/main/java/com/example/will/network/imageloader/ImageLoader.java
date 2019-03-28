@@ -346,7 +346,12 @@ public class ImageLoader {
                         }
                     });
                 } else {
-                    imageView.setImageResource(R.drawable.imageload_fail);
+                    mMainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            imageView.setImageResource(R.drawable.imageload_fail);
+                        }
+                    });
                 }
             }
         });

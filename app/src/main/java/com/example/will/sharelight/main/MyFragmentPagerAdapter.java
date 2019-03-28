@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
-    private String[] mTitles = new String[]{"home", "square"};
 
     public MyFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -24,7 +23,7 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return mTitles.length;
+        return 2;
     }
 
 }

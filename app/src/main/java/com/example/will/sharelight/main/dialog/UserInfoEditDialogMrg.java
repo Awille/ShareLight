@@ -72,6 +72,7 @@ public class UserInfoEditDialogMrg implements View.OnClickListener {
         double width = ((Activity)mContext).getWindowManager().getDefaultDisplay().getWidth() * 0.72;
         lp.width = (int) width;
         dialog.getWindow().setAttributes(lp);
+        dialog.getWindow().setBackgroundDrawableResource(R.color.transparent);
         dialog.show();
     }
 

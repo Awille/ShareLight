@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:background="@color/EAEAEA">
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:background="@color/EAEAEA">
+
+        <LinearLayout
+            android:id="@+id/user_info_pannel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/main_user_info_background"
+            android:layout_marginLeft="@dimen/dp_10"
+            android:layout_marginRight="@dimen/dp_10"
+            android:padding="@dimen/dp_5"
+            android:gravity="center_vertical">
+
+            <com.example.will.utils.CircleImageView
+                android:id="@+id/user_avatar"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:layout_width="@dimen/dp_30"
+                android:layout_height="@dimen/dp_30"
+                android:src="@drawable/image_loading"/>
+
+            <com.example.will.utils.MyTextView
+                android:id="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:text="Awille"
+                android:textSize="@dimen/sp_16"/>
+
+            <ImageView
+                android:id="@+id/gender_image"
+                android:layout_width="@dimen/dp_20"
+                android:layout_height="@dimen/dp_20"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:src="@drawable/unknow_sexual"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/song_list_pannel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/user_info_pannel"
+            android:layout_marginLeft="@dimen/dp_10"
+            android:layout_marginRight="@dimen/dp_10"
+            android:orientation="vertical">
+            <LinearLayout
+                android:id="@+id/hide_list_pannel"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/divide_pannel_background"
+                android:padding="@dimen/dp_5"
+                android:gravity="center_vertical">
+                <ImageView
+                    android:id="@+id/hide_list_img"
+                    android:layout_width="@dimen/dp_15"
+                    android:layout_height="@dimen/dp_15"
+                    android:layout_marginLeft="@dimen/dp_10"
+                    android:src="@drawable/down" />
+
+                <TextView
+                    android:id="@+id/created_list_txt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dp_10"
+                    android:text="我的收藏"
+                    android:textColor="@color/FFFFFF"/>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right">
+                    <ImageView
+                        android:id="@+id/song_list_setting"
+                        android:layout_width="@dimen/dp_15"
+                        android:layout_height="@dimen/dp_15"
+                        android:src="@drawable/setting"
+                        android:layout_gravity="right"
+                        android:layout_marginRight="@dimen/dp_10"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/song_list_recycler_view"
+                android:background="@color/FFFFFF"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </android.support.v7.widget.RecyclerView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/upload_song_pannel"
+            android:orientation="vertical"
+            android:layout_below="@+id/song_list_pannel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_10"
+            android:layout_marginRight="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_3">
+            <LinearLayout
+                android:id="@+id/hide_upload_pannel"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/divide_pannel_background"
+                android:padding="@dimen/dp_5"
+                android:gravity="center_vertical">
+                <ImageView
+                    android:id="@+id/hide_upload_img"
+                    android:layout_width="@dimen/dp_15"
+                    android:layout_height="@dimen/dp_15"
+                    android:layout_marginLeft="@dimen/dp_10"
+                    android:src="@drawable/down" />
+
+                <TextView
+                    android:id="@+id/upload_song_txt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dp_10"
+                    android:text="我的创作"
+                    android:textColor="@color/FFFFFF"/>
+            </LinearLayout>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/upload_song_recycler_view"
+                android:background="@color/FFFFFF"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </android.support.v7.widget.RecyclerView>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</ScrollView>

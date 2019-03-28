@@ -1,14 +1,10 @@
 package com.example.will.sharelight.main;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -17,6 +13,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -35,6 +32,7 @@ import com.example.will.protocol.user.User;
 import com.example.will.sharelight.R;
 import com.example.will.sharelight.main.dialog.ImageSelectChannelDialogMrg;
 import com.example.will.sharelight.main.dialog.UserInfoEditDialogMrg;
+import com.example.will.sharelight.main.homefragment.HomeFragment;
 import com.example.will.utils.CircleImageView;
 import com.example.will.utils.MyTextView;
 import com.example.will.utils.TextUtils;
@@ -46,7 +44,6 @@ import com.github.mzule.fantasyslide.SideBar;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, DatePickerDialog.OnDateSetListener, MainContract.MainView {
@@ -69,8 +66,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private SideBar leftSideBar;
 
-    private Context context;
-
     private UserInfoEditDialogMrg userInfoEditDialogMrg;
     private ImageSelectChannelDialogMrg imageSelectChannelDialogMrg;
 
@@ -84,6 +79,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private MainPresenterImpl mainPresenter;
 
+    private RecyclerView songListRecyclerView;
+
+
+    public interface HomeFragmentListener {
+        void onUserInfoChange();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,26 +96,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
         toolBarInit();
         setLeftSideBarListener();
-        context = this;
     }
 
     @SuppressLint("NewApi")
     void initView() {
         //id绑定
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mToolBar = (Toolbar) findViewById(R.id.tool_bar);
-        mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        mViewPager = (ViewPager) findViewById(R.id.view_pager);
-        userAvatar = (CircleImageView) findViewById(R.id.user_avatar);
-        sexual = (ImageView) findViewById(R.id.sexual);
-        userName = (MyTextView) findViewById(R.id.user_name);
-        changeAvatarPannel = (LinearLayout) findViewById(R.id.change_avatar_pannel);
-        birthPannel = (LinearLayout) findViewById(R.id.birth_pannel);
-        birthText = (MyTextView) findViewById(R.id.birth_text);
-        uploadPannel = (LinearLayout) findViewById(R.id.upload_pannel);
-        signaturePannel = (LinearLayout) findViewById(R.id.signature_pannel);
-        description = (TextView) findViewById(R.id.description);
-        leftSideBar = (SideBar) findViewById(R.id.leftSideBar);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        mToolBar = findViewById(R.id.tool_bar);
+        mTabLayout = findViewById(R.id.tab_layout);
+        mViewPager = findViewById(R.id.view_pager);
+        userAvatar = findViewById(R.id.user_avatar);
+        sexual = findViewById(R.id.sexual);
+        userName = findViewById(R.id.user_name);
+        changeAvatarPannel = findViewById(R.id.change_avatar_pannel);
+        birthPannel = findViewById(R.id.birth_pannel);
+        birthText = findViewById(R.id.birth_text);
+        uploadPannel = findViewById(R.id.upload_pannel);
+        signaturePannel = findViewById(R.id.signature_pannel);
+        description = findViewById(R.id.description);
+        leftSideBar = findViewById(R.id.leftSideBar);
+        songListRecyclerView = findViewById(R.id.song_list_recycler_view);
 
         //viewpager加载
         fragmentPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
@@ -337,6 +339,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //更新上下文
         MusicDataContext.getINSTANCE().setUser(user);
         userInfoEditDialogMrg.dimissDialog();
+        //fragment信息更新
+        homeFragment.onUserInfoChange();
     }
 
     @Override
@@ -350,6 +354,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         LoadingUtils.getINSTANCE(this).dismisDialog();
         imageSelectChannelDialogMrg.dismissDialog();
         ToastUtils.showSuccessToast(this, "上传成功", ToastUtils.LENGTH_LONG);
+        //fragment信息更新
+        homeFragment.onUserInfoChange();
     }
 
     @Override
