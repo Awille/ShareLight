@@ -3,6 +3,7 @@ package com.example.will.sharelight.main.dialog;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,8 @@ public class SongSettingDialog implements View.OnClickListener {
     private TextView songName;
     private LinearLayout uploadAvatarPannel;
     private LinearLayout uploadResourcePannel;
+
+    public static final int SELECT_SONG_RESOURCE = 5;
 
     public SongSettingDialog(Context context) {
         this.context = context;
@@ -82,9 +85,16 @@ public class SongSettingDialog implements View.OnClickListener {
                 break;
             }
             case R.id.upload_resource_pannel: {
+                clickUploadSongResource();
                 break;
             }
         }
+    }
 
+    private void clickUploadSongResource() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("audio/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        ((MainActivity)context).startActivityForResult(intent, SELECT_SONG_RESOURCE);
     }
 }

@@ -118,4 +118,24 @@ public class MainPresenterImpl implements MainContract.MainPresenter {
             }
         });
     }
+
+    @Override
+    public void changeSongResource(UploadFile uploadFile) {
+        UploadSongFileRequest uploadSongFileRequest = new UploadSongFileRequest();
+        uploadSongFileRequest.setService("201");
+        UploadSongFileRequestData data = new UploadSongFileRequestData();
+        data.setUploadFile(uploadFile);
+        uploadSongFileRequest.setData(data);
+        MusicProvider.getINSTANCE().getSongProvider().uploadSongFile(uploadSongFileRequest, new UploadSongFileCallback() {
+            @Override
+            public void onUploadSongFileSuccess(UploadSongFileReponse reponse) {
+                mainView.onChangeSongResourceSuccess();
+            }
+
+            @Override
+            public void onUploadSongFileFail(String errCode, String errMsg) {
+                mainView.onChangeSongAvatarFail(errCode, errMsg);
+            }
+        });
+    }
 }

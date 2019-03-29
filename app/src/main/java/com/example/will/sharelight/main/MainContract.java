@@ -10,6 +10,7 @@ public class MainContract {
          void changeUserAvatar(UploadFile uploadFile);
          void addSong(Song song);
          void changeSongAvatar(UploadFile uploadFile);
+         void changeSongResource(UploadFile uploadFile);
      }
 
      public interface MainView {
@@ -24,5 +25,8 @@ public class MainContract {
 
          void onChangeSongAvatarSuccess();
          void onChangeSongAvatarFail(String errCode, String errMsg);
+
+         void onChangeSongResourceSuccess();
+         void onChangeSongResourceFail(String errCode, String errMsg);
      }
 }

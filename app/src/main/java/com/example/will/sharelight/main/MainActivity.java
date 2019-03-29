@@ -2,6 +2,7 @@ package com.example.will.sharelight.main;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.Nullable;
@@ -35,9 +36,11 @@ import com.example.will.sharelight.main.dialog.AddSongDialogMrg;
 import com.example.will.sharelight.main.dialog.ImageSelectChannelDialogMrg;
 import com.example.will.sharelight.main.dialog.SongAvatarSelectChannelDialog;
 import com.example.will.sharelight.main.dialog.SongSettingDialog;
+import com.example.will.sharelight.main.dialog.UploadSongResourceDialog;
 import com.example.will.sharelight.main.dialog.UserInfoEditDialogMrg;
 import com.example.will.sharelight.main.homefragment.HomeFragment;
 import com.example.will.utils.CircleImageView;
+import com.example.will.utils.FileUtils;
 import com.example.will.utils.MyTextView;
 import com.example.will.utils.TextUtils;
 import com.example.will.utils.TimeUtils;
@@ -48,6 +51,7 @@ import com.github.mzule.fantasyslide.SideBar;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, DatePickerDialog.OnDateSetListener, MainContract.MainView {
@@ -73,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private UserInfoEditDialogMrg userInfoEditDialogMrg;
     private ImageSelectChannelDialogMrg imageSelectChannelDialogMrg;
     private AddSongDialogMrg addSongDialogMrg;
-
+    private UploadSongResourceDialog uploadSongResourceDialog;
     private SongAvatarSelectChannelDialog songAvatarSelectChannelDialog;
 
     private SongSettingDialog songSettingDialog;
@@ -105,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         imageSelectChannelDialogMrg = new ImageSelectChannelDialogMrg(this, mainPresenter);
         addSongDialogMrg = new AddSongDialogMrg(this, mainPresenter);
         songSettingDialog = new SongSettingDialog(this);
+        uploadSongResourceDialog = new UploadSongResourceDialog(this, mainPresenter);
         //记住使用前一定要setsong
         songAvatarSelectChannelDialog = new SongAvatarSelectChannelDialog(this, mainPresenter);
         initView();
@@ -382,6 +387,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             }
+            case SongSettingDialog.SELECT_SONG_RESOURCE: {
+                Uri uri = data.getData();
+                try {
+                    String path = FileUtils.getPath(this, uri);
+                    songSettingDialog.dismissDialog();
+                    uploadSongResourceDialog.showDialog(path, songSettingDialog.getSong());
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
         }
     }
 
@@ -459,5 +475,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         LoadingUtils.getINSTANCE(this).dismisDialog();
         songAvatarSelectChannelDialog.dismissDialog();
         ToastUtils.showErrorToast(this,"上传失败", ToastUtils.LENGTH_LONG);
+    }
+
+    @Override
+    public void onChangeSongResourceSuccess() {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        ToastUtils.showSuccessToast(this, "上传成功", ToastUtils.LENGTH_SHORT);
+        uploadSongResourceDialog.dismissDialog();
+    }
+
+    @Override
+    public void onChangeSongResourceFail(String errCode, String errMsg) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        ToastUtils.showErrorToast(this, "上传失败", ToastUtils.LENGTH_LONG);
+        uploadSongResourceDialog.dismissDialog();
     }
 }
