@@ -35,6 +35,8 @@ import com.example.will.sharelight.R;
 import com.example.will.sharelight.main.dialog.AddSongDialogMrg;
 import com.example.will.sharelight.main.dialog.ImageSelectChannelDialogMrg;
 import com.example.will.sharelight.main.dialog.SongAvatarSelectChannelDialog;
+import com.example.will.sharelight.main.dialog.SongListAvatarSelectDialog;
+import com.example.will.sharelight.main.dialog.SongListSettingDialog;
 import com.example.will.sharelight.main.dialog.SongSettingDialog;
 import com.example.will.sharelight.main.dialog.UploadSongResourceDialog;
 import com.example.will.sharelight.main.dialog.UserInfoEditDialogMrg;
@@ -79,7 +81,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private AddSongDialogMrg addSongDialogMrg;
     private UploadSongResourceDialog uploadSongResourceDialog;
     private SongAvatarSelectChannelDialog songAvatarSelectChannelDialog;
-
+    private SongListAvatarSelectDialog songListAvatarSelectDialog;
+    private SongListSettingDialog songListSettingDialog;
     private SongSettingDialog songSettingDialog;
 
     private MyFragmentPagerAdapter fragmentPagerAdapter;
@@ -98,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public interface HomeFragmentListener {
         void onUserInfoChange();
         void onUploadSongChange();
+        void onChangeSongList();
     }
 
     @Override
@@ -110,11 +114,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         addSongDialogMrg = new AddSongDialogMrg(this, mainPresenter);
         songSettingDialog = new SongSettingDialog(this);
         uploadSongResourceDialog = new UploadSongResourceDialog(this, mainPresenter);
+        songListSettingDialog = new SongListSettingDialog(this, mainPresenter);
+        songListAvatarSelectDialog = new SongListAvatarSelectDialog(this, mainPresenter);
         //记住使用前一定要setsong
         songAvatarSelectChannelDialog = new SongAvatarSelectChannelDialog(this, mainPresenter);
         initView();
         toolBarInit();
         setLeftSideBarListener();
+    }
+
+    public SongListSettingDialog getSongListSettingDialog() {
+        return songListSettingDialog;
     }
 
     public SongSettingDialog getSongSettingDialog() {
@@ -123,6 +133,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public SongAvatarSelectChannelDialog getSongAvatarSelectChannelDialog() {
         return songAvatarSelectChannelDialog;
+    }
+
+    public SongListAvatarSelectDialog getSongListAvatarSelectDialog() {
+        return songListAvatarSelectDialog;
     }
 
 
@@ -301,6 +315,128 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         datePickerDialog.show(getSupportFragmentManager(), "DatePickerDialog");
     }
 
+
+
+
+
+
+
+    @SuppressLint("NewApi")
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+        User temp = MusicDataContext.getINSTANCE().getUser();
+        temp.setBirth(TimeUtils.int2StringFormat1(year, monthOfYear, dayOfMonth));
+        mainPresenter.updateUserInfo(temp);
+        LoadingUtils.getINSTANCE(this).showLoadingViewGhost();
+    }
+
+    @Override
+    public void onUpdateUserInfoSuccess(User user) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        ToastUtils.showSuccessToast(this, "更新成功", ToastUtils.LENGTH_SHORT);
+        //更新上下文
+        MusicDataContext.getINSTANCE().setUser(user);
+        userInfoEditDialogMrg.dimissDialog();
+        //fragment信息更新
+        homeFragment.onUserInfoChange();
+    }
+
+    @Override
+    public void onUpdateUserInfoFail(String errCode, String errMsg) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        ToastUtils.showErrorToast(this, errMsg, ToastUtils.LENGTH_LONG);
+    }
+
+    @Override
+    public void onChangeUserAvatarSuccess() {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        imageSelectChannelDialogMrg.dismissDialog();
+        ToastUtils.showSuccessToast(this, "上传成功", ToastUtils.LENGTH_LONG);
+        //fragment信息更新
+        homeFragment.onUserInfoChange();
+    }
+
+    @Override
+    public void onChangeUserAvatarFail(String errCode, String errMsg) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        imageSelectChannelDialogMrg.dismissDialog();
+        ToastUtils.showErrorToast(this, "上传失败", ToastUtils.LENGTH_LONG);
+    }
+
+    @Override
+    public void onAddSongSuccess(Song song) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        addSongDialogMrg.dismissDialog();
+        ToastUtils.showSuccessToast(this, "添加成功，请于上传列表对资源进行更新", ToastUtils.LENGTH_LONG);
+        homeFragment.onUploadSongChange();
+    }
+
+    @Override
+    public void onAddSongFail(String errCode, String errMsg) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        addSongDialogMrg.dismissDialog();
+        ToastUtils.showErrorToast(this, errMsg, ToastUtils.LENGTH_SHORT);
+    }
+
+    @Override
+    public void onChangeSongAvatarSuccess() {
+        ToastUtils.showSuccessToast(this, "上传成功", ToastUtils.LENGTH_SHORT);
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        songAvatarSelectChannelDialog.dismissDialog();
+        homeFragment.onUploadSongChange();
+    }
+
+    @Override
+    public void onChangeSongAvatarFail(String errCode, String errMsg) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        songAvatarSelectChannelDialog.dismissDialog();
+        ToastUtils.showErrorToast(this,"上传失败", ToastUtils.LENGTH_LONG);
+    }
+
+    @Override
+    public void onChangeSongResourceSuccess() {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        ToastUtils.showSuccessToast(this, "上传成功", ToastUtils.LENGTH_SHORT);
+        uploadSongResourceDialog.dismissDialog();
+        //主界面更新
+        homeFragment.onUploadSongChange();
+    }
+
+    @Override
+    public void onChangeSongResourceFail(String errCode, String errMsg) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        ToastUtils.showErrorToast(this, "上传失败", ToastUtils.LENGTH_LONG);
+        uploadSongResourceDialog.dismissDialog();
+    }
+
+    @Override
+    public void onChangeSongListAvatarSuccess() {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        songListAvatarSelectDialog.dismissDialog();
+        ToastUtils.showSuccessToast(this, "更新成功", ToastUtils.LENGTH_SHORT);
+        homeFragment.onChangeSongList();
+    }
+
+    @Override
+    public void onChangeSongListAvatarFail(String errCode, String errMsg) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        ToastUtils.showErrorToast(this, "上传失败", ToastUtils.LENGTH_LONG);
+    }
+
+    @Override
+    public void onDeleteSongListSuccess() {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        ToastUtils.showSuccessToast(this, "删除成功", ToastUtils.LENGTH_SHORT);
+        homeFragment.onChangeSongList();
+    }
+
+    @Override
+    public void onDeleteSongListFail(String errCode, String errMsg) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        ToastUtils.showErrorToast(this, "删除失败", ToastUtils.LENGTH_LONG);
+    }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -387,6 +523,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             }
+            case SongListAvatarSelectDialog.TAKE_ALBUM_SONG_LIST: {
+                if (resultCode == RESULT_OK) {
+                    try {
+                        Uri imgUri = data.getData();
+                        if (imgUri != null) {
+                            Bitmap bitmap = ImageResizer.decodeSampleBitmapFromStream(getContentResolver().openInputStream(imgUri),
+                                    200, 200);
+                            if (bitmap == null) {
+                                ToastUtils.showErrorToast(this, "相机错误", ToastUtils.LENGTH_LONG);
+                                songListAvatarSelectDialog.dismissDialog();
+                            } else {
+                                songListAvatarSelectDialog.finishSelect(bitmap);
+                            }
+                        }
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                        ToastUtils.showErrorToast(this, "相册错误", ToastUtils.LENGTH_SHORT);
+                        songListAvatarSelectDialog.dismissDialog();
+                    }
+                }
+                break;
+            }
+            case SongListAvatarSelectDialog.TAKE_PHOTO_SONG_LIST: {
+                if (resultCode == RESULT_OK) {
+                    try {
+                        Bitmap bitmap = ImageResizer.decodeSampleBitmapFromStream(getContentResolver().openInputStream(
+                                songListAvatarSelectDialog.getImgUri()), 200, 200);
+                        if (bitmap == null) {
+                            ToastUtils.showErrorToast(this, "相机错误", ToastUtils.LENGTH_LONG);
+                            songListAvatarSelectDialog.dismissDialog();
+                        } else {
+                            songListAvatarSelectDialog.finishSelect(bitmap);
+                        }
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                        ToastUtils.showErrorToast(this, "相机错误", ToastUtils.LENGTH_SHORT);
+                        songListAvatarSelectDialog.dismissDialog();
+                    }
+                }
+                break;
+            }
             case SongSettingDialog.SELECT_SONG_RESOURCE: {
                 Uri uri = data.getData();
                 try {
@@ -399,95 +576,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
         }
-    }
-
-
-
-
-
-    @SuppressLint("NewApi")
-    @Override
-    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        User temp = MusicDataContext.getINSTANCE().getUser();
-        temp.setBirth(TimeUtils.int2StringFormat1(year, monthOfYear, dayOfMonth));
-        mainPresenter.updateUserInfo(temp);
-        LoadingUtils.getINSTANCE(this).showLoadingViewGhost();
-    }
-
-    @Override
-    public void onUpdateUserInfoSuccess(User user) {
-        LoadingUtils.getINSTANCE(this).dismisDialog();
-        ToastUtils.showSuccessToast(this, "更新成功", ToastUtils.LENGTH_SHORT);
-        //更新上下文
-        MusicDataContext.getINSTANCE().setUser(user);
-        userInfoEditDialogMrg.dimissDialog();
-        //fragment信息更新
-        homeFragment.onUserInfoChange();
-    }
-
-    @Override
-    public void onUpdateUserInfoFail(String errCode, String errMsg) {
-        LoadingUtils.getINSTANCE(this).dismisDialog();
-        ToastUtils.showErrorToast(this, errMsg, ToastUtils.LENGTH_LONG);
-    }
-
-    @Override
-    public void onChangeUserAvatarSuccess() {
-        LoadingUtils.getINSTANCE(this).dismisDialog();
-        imageSelectChannelDialogMrg.dismissDialog();
-        ToastUtils.showSuccessToast(this, "上传成功", ToastUtils.LENGTH_LONG);
-        //fragment信息更新
-        homeFragment.onUserInfoChange();
-    }
-
-    @Override
-    public void onChangeUserAvatarFail(String errCode, String errMsg) {
-        LoadingUtils.getINSTANCE(this).dismisDialog();
-        imageSelectChannelDialogMrg.dismissDialog();
-        ToastUtils.showErrorToast(this, "上传失败", ToastUtils.LENGTH_LONG);
-    }
-
-    @Override
-    public void onAddSongSuccess(Song song) {
-        LoadingUtils.getINSTANCE(this).dismisDialog();
-        addSongDialogMrg.dismissDialog();
-        ToastUtils.showSuccessToast(this, "添加成功，请于上传列表对资源进行更新", ToastUtils.LENGTH_LONG);
-        homeFragment.onUploadSongChange();
-    }
-
-    @Override
-    public void onAddSongFail(String errCode, String errMsg) {
-        LoadingUtils.getINSTANCE(this).dismisDialog();
-        addSongDialogMrg.dismissDialog();
-        ToastUtils.showErrorToast(this, errMsg, ToastUtils.LENGTH_SHORT);
-    }
-
-    @Override
-    public void onChangeSongAvatarSuccess() {
-        ToastUtils.showSuccessToast(this, "上传成功", ToastUtils.LENGTH_SHORT);
-        LoadingUtils.getINSTANCE(this).dismisDialog();
-        songAvatarSelectChannelDialog.dismissDialog();
-        homeFragment.onUploadSongChange();
-    }
-
-    @Override
-    public void onChangeSongAvatarFail(String errCode, String errMsg) {
-        LoadingUtils.getINSTANCE(this).dismisDialog();
-        songAvatarSelectChannelDialog.dismissDialog();
-        ToastUtils.showErrorToast(this,"上传失败", ToastUtils.LENGTH_LONG);
-    }
-
-    @Override
-    public void onChangeSongResourceSuccess() {
-        LoadingUtils.getINSTANCE(this).dismisDialog();
-        ToastUtils.showSuccessToast(this, "上传成功", ToastUtils.LENGTH_SHORT);
-        uploadSongResourceDialog.dismissDialog();
-    }
-
-    @Override
-    public void onChangeSongResourceFail(String errCode, String errMsg) {
-        LoadingUtils.getINSTANCE(this).dismisDialog();
-        ToastUtils.showErrorToast(this, "上传失败", ToastUtils.LENGTH_LONG);
-        uploadSongResourceDialog.dismissDialog();
     }
 }

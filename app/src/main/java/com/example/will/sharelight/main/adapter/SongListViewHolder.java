@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.example.will.sharelight.R;
 
-public class SongListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class SongListViewHolder extends RecyclerView.ViewHolder{
     private static final String TAG = "SongListViewHolder";
 
     public ImageView songListAvatar;
@@ -25,17 +25,5 @@ public class SongListViewHolder extends RecyclerView.ViewHolder implements View.
         songListAvatar = itemView.findViewById(R.id.song_list_avatar);
         songListName = itemView.findViewById(R.id.song_list_name);
         songListSetting = itemView.findViewById(R.id.song_list_item_setting);
-        songListSetting.setOnClickListener(this);
-    }
-
-    @Override
-    public void onClick(View v) {
-        int viewId = v.getId();
-        switch (viewId) {
-            case R.id.song_list_item_setting: {
-                Log.e(TAG, "点击歌单设置");
-                break;
-            }
-        }
     }
 }

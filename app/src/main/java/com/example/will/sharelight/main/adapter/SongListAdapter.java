@@ -4,12 +4,14 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.will.network.imageloader.ImageLoader;
 import com.example.will.network.retrofit.RetrofitMrg;
 import com.example.will.protocol.songlist.SongList;
 import com.example.will.sharelight.R;
+import com.example.will.sharelight.main.MainActivity;
 import com.example.will.utils.TextUtils;
 
 import java.util.List;
@@ -50,6 +52,12 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListViewHolder> {
             songListViewHolder.songListAvatar.setImageResource(R.drawable.image_loading);
         }
         songListViewHolder.songListName.setText(songLists.get(position).getBasicInfo().getName());
+        songListViewHolder.songListSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)context).getSongListSettingDialog().showDialog(songLists.get(position));
+            }
+        });
     }
 
     @Override

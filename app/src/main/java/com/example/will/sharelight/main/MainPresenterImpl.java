@@ -15,6 +15,12 @@ import com.example.will.protocol.song.request.UploadSongFileRequest;
 import com.example.will.protocol.song.request.UploadSongFileRequestData;
 import com.example.will.protocol.song.response.AddSongResponse;
 import com.example.will.protocol.song.response.UploadSongFileReponse;
+import com.example.will.protocol.songlist.callback.DeleteSongListCallback;
+import com.example.will.protocol.songlist.callback.UploadSongListFileCallback;
+import com.example.will.protocol.songlist.request.UploadSongListFileRequest;
+import com.example.will.protocol.songlist.request.UploadSongListFileRequestData;
+import com.example.will.protocol.songlist.response.DeleteSongListResponse;
+import com.example.will.protocol.songlist.response.UploadSongListFileResponse;
 import com.example.will.protocol.user.User;
 import com.example.will.protocol.user.callbcak.ModifyUserAvatarCallback;
 import com.example.will.protocol.user.callbcak.UpdateUserInfoCallback;
@@ -134,7 +140,42 @@ public class MainPresenterImpl implements MainContract.MainPresenter {
 
             @Override
             public void onUploadSongFileFail(String errCode, String errMsg) {
-                mainView.onChangeSongAvatarFail(errCode, errMsg);
+                mainView.onChangeSongResourceFail(errCode, errMsg);
+            }
+        });
+    }
+
+    @Override
+    public void changeSongListAvatar(UploadFile uploadFile) {
+        UploadSongListFileRequest uploadSongListFileRequest = new UploadSongListFileRequest();
+        uploadSongListFileRequest.setService("301");
+        UploadSongListFileRequestData data = new UploadSongListFileRequestData();
+        data.setUploadFile(uploadFile);
+        uploadSongListFileRequest.setData(data);
+        MusicProvider.getINSTANCE().getSongListProvider().uploadSongListFile(uploadSongListFileRequest, new UploadSongListFileCallback() {
+            @Override
+            public void onUploadSongListFileSuccess(UploadSongListFileResponse response) {
+                mainView.onChangeSongListAvatarSuccess();
+            }
+
+            @Override
+            public void onUploadSongListFileFail(String errCode, String errMsg) {
+                mainView.onChangeSongListAvatarFail(errCode, errMsg);
+            }
+        });
+    }
+
+    @Override
+    public void deleSongList(long songListId) {
+        MusicProvider.getINSTANCE().getSongListProvider().deleteSongList(songListId, new DeleteSongListCallback() {
+            @Override
+            public void onDeleteSongListSuccess(DeleteSongListResponse response) {
+                mainView.onDeleteSongListSuccess();
+            }
+
+            @Override
+            public void onDeleteSongListFail(String errCode, String errMsg) {
+                mainView.onDeleteSongListFail(errCode, errMsg);
             }
         });
     }

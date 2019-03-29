@@ -11,6 +11,8 @@ public class MainContract {
          void addSong(Song song);
          void changeSongAvatar(UploadFile uploadFile);
          void changeSongResource(UploadFile uploadFile);
+         void changeSongListAvatar(UploadFile uploadFile);
+         void deleSongList(long songListId);
      }
 
      public interface MainView {
@@ -28,5 +30,11 @@ public class MainContract {
 
          void onChangeSongResourceSuccess();
          void onChangeSongResourceFail(String errCode, String errMsg);
+
+         void onChangeSongListAvatarSuccess();
+         void onChangeSongListAvatarFail(String errCode, String errMsg);
+
+         void onDeleteSongListSuccess();
+         void onDeleteSongListFail(String errCode, String errMsg);
      }
 }

@@ -103,7 +103,6 @@ public class UploadSongResourceDialog implements View.OnClickListener {
                 UploadFile uploadFile = new UploadFile();
                 String format = "upload_resource" + filePath.substring(filePath.lastIndexOf("."));
                 uploadFile.setFileName(format);
-                Log.e(TAG, "长传文件格式" + format);
                 uploadFile.setAccount(String.valueOf(song.getSongId()));
                 uploadFile.setFileStr(FileUtils.fileToBase64(filePath).replaceAll("\r\n", ""));
                 mainPresenter.changeSongResource(uploadFile);

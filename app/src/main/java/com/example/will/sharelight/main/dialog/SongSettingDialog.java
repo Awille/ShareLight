@@ -44,6 +44,9 @@ public class SongSettingDialog implements View.OnClickListener {
         if (dialog == null) {
             initDialog();
         }
+        if (song != null) {
+            songName.setText("歌曲: " + song.getName());
+        }
         WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
         dialog.getWindow().setGravity(Gravity.BOTTOM);
         dialog.show();
@@ -70,9 +73,6 @@ public class SongSettingDialog implements View.OnClickListener {
         uploadResourcePannel = view.findViewById(R.id.upload_resource_pannel);
         uploadResourcePannel.setOnClickListener(this);
         uploadAvatarPannel.setOnClickListener(this);
-        if (song != null) {
-            songName.setText("歌曲: " + song.getName());
-        }
     }
 
     @Override

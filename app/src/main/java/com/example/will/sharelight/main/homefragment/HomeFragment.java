@@ -204,4 +204,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Home
         //添加歌曲，对上传歌单进行更新
         homePrenster.queryUploadSongs(MusicDataContext.getINSTANCE().getUser().getUserId());
     }
+
+    @Override
+    public void onChangeSongList() {
+        //更改歌单  对歌单进行更新
+        homePrenster.querySongLists(MusicDataContext.getINSTANCE().getUser().getUserId());
+    }
 }
