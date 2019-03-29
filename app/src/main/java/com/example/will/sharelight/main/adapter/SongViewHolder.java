@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.example.will.sharelight.R;
 
-public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class SongViewHolder extends RecyclerView.ViewHolder {
     private static final String TAG = "SongViewHolder";
 
     public ImageView songAvatar;
@@ -18,6 +18,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     public TextView singerAndAlbum;
     public LinearLayout authorPannel;
     public TextView athorName;
+    public ImageView songSetting;
     public LinearLayout songPannel;
 
 
@@ -32,18 +33,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         singerAndAlbum = view.findViewById(R.id.singer_album);
         authorPannel = view.findViewById(R.id.author_pannel);
         athorName = view.findViewById(R.id.author);
+        songSetting = view.findViewById(R.id.song_setting);
         songPannel = view.findViewById(R.id.song_pannel);
-        songPannel.setOnClickListener(this);
-    }
-
-    @Override
-    public void onClick(View v) {
-        int viewId = v.getId();
-        switch (viewId) {
-            case R.id.song_pannel: {
-                Log.e(TAG, "点击歌曲");
-                break;
-            }
-        }
     }
 }

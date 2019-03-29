@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.example.will.datacontext.MusicDataContext;
@@ -58,6 +57,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Home
     private SongListAdapter songListAdapter;
     private List<Song> uploadSongs = new ArrayList<>();
     private SongAdapter songAdapter;
+
+
 
 
 
@@ -170,8 +171,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Home
     @Override
     public void onQuerySongListsSuccess(List<SongList> songLists) {
         Log.e(TAG, "歌单查询成功 " + JSON.toJSONString(songLists));
-
-        ToastUtils.showSuccessToast(getActivity(), "拉取歌单成功", ToastUtils.LENGTH_SHORT);
         this.songLists = songLists;
         songListAdapter.setSongLists(songLists);
         songListAdapter.notifyDataSetChanged();
@@ -198,5 +197,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Home
     @Override
     public void onUserInfoChange() {
         updateUserInfo();
+    }
+
+    @Override
+    public void onUploadSongChange() {
+        //添加歌曲，对上传歌单进行更新
+        homePrenster.queryUploadSongs(MusicDataContext.getINSTANCE().getUser().getUserId());
     }
 }

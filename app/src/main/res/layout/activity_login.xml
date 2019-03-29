@@ -51,14 +51,15 @@
                 android:text="Account"
                 android:textColor="@color/C_898989"
                 android:textSize="@dimen/sp_15"/>
+
             <EditText
                 android:id="@+id/account"
                 android:layout_width="@dimen/dp_276"
                 android:layout_height="@dimen/dp_40"
+                android:layout_gravity="center"
                 android:layout_marginTop="@dimen/dp_11"
                 android:background="@drawable/edit_text_background_normal"
-                android:paddingLeft="@dimen/dp_15"
-                android:layout_gravity="center" />
+                android:paddingLeft="@dimen/dp_15" />
         </LinearLayout>
 
         <LinearLayout

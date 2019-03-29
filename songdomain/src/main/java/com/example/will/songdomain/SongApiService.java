@@ -22,7 +22,7 @@ public interface SongApiService {
     @GET(RetrofitMrg.songUrl)
     HttpCall<QuerySongsResponse> querySongs(@Query("songName") String songName, @Query("author") long author);
 
-    @PUT(RetrofitMrg.songUrl)
+    @POST(RetrofitMrg.songUrl)
     HttpCall<UploadSongFileReponse> uploadSongFile(@Body UploadSongFileRequest request);
 
     @POST(RetrofitMrg.songUrl)

@@ -1,8 +1,20 @@
 package com.example.will.sharelight.main;
 
+import android.util.Log;
+
+import com.alibaba.fastjson.JSON;
 import com.example.will.datacontext.MusicDataContext;
 import com.example.will.musicprovider.MusicProvider;
 import com.example.will.protocol.UploadFile;
+import com.example.will.protocol.song.Song;
+import com.example.will.protocol.song.callback.AddSongCallback;
+import com.example.will.protocol.song.callback.UploadSongFileCallback;
+import com.example.will.protocol.song.request.AddSongRequest;
+import com.example.will.protocol.song.request.AddSongRequestData;
+import com.example.will.protocol.song.request.UploadSongFileRequest;
+import com.example.will.protocol.song.request.UploadSongFileRequestData;
+import com.example.will.protocol.song.response.AddSongResponse;
+import com.example.will.protocol.song.response.UploadSongFileReponse;
 import com.example.will.protocol.user.User;
 import com.example.will.protocol.user.callbcak.ModifyUserAvatarCallback;
 import com.example.will.protocol.user.callbcak.UpdateUserInfoCallback;
@@ -62,5 +74,48 @@ public class MainPresenterImpl implements MainContract.MainPresenter {
             }
         });
 
+    }
+
+    @Override
+    public void addSong(Song song) {
+        AddSongRequest addSongRequest = new AddSongRequest();
+        addSongRequest.setService("203");
+        AddSongRequestData data = new AddSongRequestData();
+        data.setSong(song);
+        addSongRequest.setData(data);
+        Log.e(TAG, "AddSongRequest" + JSON.toJSONString(addSongRequest));
+        MusicProvider.getINSTANCE().getSongProvider().addSong(addSongRequest, new AddSongCallback() {
+            @Override
+            public void onAddSongSuccess(AddSongResponse response) {
+                mainView.onAddSongSuccess(response.getData());
+            }
+
+            @Override
+            public void onAddSongFail(String errCode, String errMsg) {
+                mainView.onAddSongFail(errCode, errMsg);
+            }
+        });
+    }
+
+    @Override
+    public void changeSongAvatar(UploadFile uploadFile) {
+        UploadSongFileRequest uploadSongFileRequest = new UploadSongFileRequest();
+        uploadSongFileRequest.setService("204");
+        UploadSongFileRequestData data = new UploadSongFileRequestData();
+        data.setUploadFile(uploadFile);
+        uploadSongFileRequest.setData(data);
+        MusicProvider.getINSTANCE().getSongProvider().uploadSongFile(uploadSongFileRequest, new UploadSongFileCallback() {
+            @Override
+            public void onUploadSongFileSuccess(UploadSongFileReponse reponse) {
+                Log.e(TAG, "上传结果:" + JSON.toJSONString(reponse));
+                mainView.onChangeSongAvatarSuccess();
+            }
+
+            @Override
+            public void onUploadSongFileFail(String errCode, String errMsg) {
+                Log.e(TAG, "上传结果:" + errCode + " " + errMsg);
+                mainView.onChangeSongAvatarFail(errCode, errMsg);
+            }
+        });
     }
 }

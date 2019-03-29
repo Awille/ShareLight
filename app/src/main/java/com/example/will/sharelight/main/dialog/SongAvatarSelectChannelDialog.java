@@ -5,10 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.ProxyInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
@@ -23,6 +20,7 @@ import android.widget.LinearLayout;
 
 import com.example.will.datacontext.MusicDataContext;
 import com.example.will.protocol.UploadFile;
+import com.example.will.protocol.song.Song;
 import com.example.will.sharelight.BuildConfig;
 import com.example.will.sharelight.R;
 import com.example.will.sharelight.main.MainPresenterImpl;
@@ -31,10 +29,10 @@ import com.example.will.utils.FileUtils;
 import com.example.will.utils.loadingutils.LoadingUtils;
 
 import java.io.File;
-import java.io.IOException;
 
-public class ImageSelectChannelDialogMrg implements View.OnClickListener {
-    private static final String TAG = "ImageSelectChannelDialo";
+public class SongAvatarSelectChannelDialog implements View.OnClickListener {
+    private static final String TAG = "SongAvatarSelectChannel";
+
     private Dialog dialog;
     private Context mContext;
     private LinearLayout selectPannel;
@@ -51,20 +49,32 @@ public class ImageSelectChannelDialogMrg implements View.OnClickListener {
 
     private Uri imgUri;
 
-    public static final int TAKE_PHOTO_USER = 1;
-    public static final int TAKE_ALBUM_USER = 2;
+    public static final int TAKE_PHOTO_SONG = 3;
+    public static final int TAKE_ALBUM_SONG = 4;
 
     private static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".fileprovider";
     private static final String PROVIDER_EXTERNAL_PATH = "/externalPath/";
 
+    private Song song;
+
     private Bitmap currentBitmap;
 
-    public ImageSelectChannelDialogMrg(Context context, MainPresenterImpl mainPresenter) {
+    public SongAvatarSelectChannelDialog(Context context, MainPresenterImpl mainPresenter) {
         this.mContext = context;
         this.mainPresenter = mainPresenter;
     }
 
-    public void showDialog() {
+    public Song getSong() {
+        return song;
+    }
+
+    public void setSong(Song song) {
+        this.song = song;
+    }
+
+
+    public void showDialog(Song song) {
+        this.song = song;
         if (dialog == null) {
             initDialog();
         }
@@ -145,18 +155,19 @@ public class ImageSelectChannelDialogMrg implements View.OnClickListener {
     private void clickCertain() {
         LoadingUtils.getINSTANCE(mContext).showLoadingViewGhost();
         UploadFile uploadFile = new UploadFile();
-        uploadFile.setAccount(MusicDataContext.getINSTANCE().getUser().getAccount());
+        //上传歌曲，account传入歌曲id
+        uploadFile.setAccount(String.valueOf(song.getSongId()));
         //随便填 我的后台会重新命名， 但后缀要正确,即文件格式一定要正确
-        uploadFile.setFileName("user_avatar.jpg");
+        uploadFile.setFileName("song_avatar.jpg");
         uploadFile.setFileStr(FileUtils.bitmapToBase64(currentBitmap));
-        mainPresenter.changeUserAvatar(uploadFile);
+        mainPresenter.changeSongAvatar(uploadFile);
     }
 
     private void clickAlbum() {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_PICK);
         intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-        ((Activity)mContext).startActivityForResult(intent, TAKE_ALBUM_USER);
+        ((Activity)mContext).startActivityForResult(intent, TAKE_ALBUM_SONG);
     }
 
     private void clickCamera() {
@@ -164,14 +175,14 @@ public class ImageSelectChannelDialogMrg implements View.OnClickListener {
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         }
-       imgUri = FileProvider.getUriForFile(mContext,
+        imgUri = FileProvider.getUriForFile(mContext,
                 AUTHORITY, file);
         Intent intent = new Intent();
         //添加这一句表示对目标应用临时授权该Uri所代表的文件
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);
-        ((Activity) mContext).startActivityForResult(intent, TAKE_PHOTO_USER);
+        ((Activity) mContext).startActivityForResult(intent, TAKE_PHOTO_SONG);
     }
 
     public Uri getImgUri() {

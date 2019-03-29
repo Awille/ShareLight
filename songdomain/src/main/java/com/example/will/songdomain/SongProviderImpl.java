@@ -1,5 +1,7 @@
 package com.example.will.songdomain;
 
+import android.util.Log;
+
 import com.example.will.network.retrofit.HttpCallback;
 import com.example.will.network.retrofit.RequestManager;
 import com.example.will.network.retrofit.RetrofitMrg;
@@ -17,6 +19,8 @@ import com.example.will.protocol.song.response.QuerySongsResponse;
 import com.example.will.protocol.song.response.UploadSongFileReponse;
 
 public class SongProviderImpl implements SongProvider {
+
+    private static final String TAG = "SongProviderImpl";
 
     private static SongApiService songApiService = RetrofitMrg.getINSTANCE().getRetrofit().create(SongApiService.class);
 

@@ -28,9 +28,13 @@ import com.example.will.datacontext.MusicDataContext;
 import com.example.will.network.imageloader.ImageLoader;
 import com.example.will.network.imageloader.ImageResizer;
 import com.example.will.network.retrofit.RetrofitMrg;
+import com.example.will.protocol.song.Song;
 import com.example.will.protocol.user.User;
 import com.example.will.sharelight.R;
+import com.example.will.sharelight.main.dialog.AddSongDialogMrg;
 import com.example.will.sharelight.main.dialog.ImageSelectChannelDialogMrg;
+import com.example.will.sharelight.main.dialog.SongAvatarSelectChannelDialog;
+import com.example.will.sharelight.main.dialog.SongSettingDialog;
 import com.example.will.sharelight.main.dialog.UserInfoEditDialogMrg;
 import com.example.will.sharelight.main.homefragment.HomeFragment;
 import com.example.will.utils.CircleImageView;
@@ -68,6 +72,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private UserInfoEditDialogMrg userInfoEditDialogMrg;
     private ImageSelectChannelDialogMrg imageSelectChannelDialogMrg;
+    private AddSongDialogMrg addSongDialogMrg;
+
+    private SongAvatarSelectChannelDialog songAvatarSelectChannelDialog;
+
+    private SongSettingDialog songSettingDialog;
 
     private MyFragmentPagerAdapter fragmentPagerAdapter;
 
@@ -84,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public interface HomeFragmentListener {
         void onUserInfoChange();
+        void onUploadSongChange();
     }
 
     @Override
@@ -93,10 +103,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mainPresenter = new MainPresenterImpl(this);
         userInfoEditDialogMrg = UserInfoEditDialogMrg.build(this, mainPresenter);
         imageSelectChannelDialogMrg = new ImageSelectChannelDialogMrg(this, mainPresenter);
+        addSongDialogMrg = new AddSongDialogMrg(this, mainPresenter);
+        songSettingDialog = new SongSettingDialog(this);
+        //记住使用前一定要setsong
+        songAvatarSelectChannelDialog = new SongAvatarSelectChannelDialog(this, mainPresenter);
         initView();
         toolBarInit();
         setLeftSideBarListener();
     }
+
+    public SongSettingDialog getSongSettingDialog() {
+        return songSettingDialog;
+    }
+
+    public SongAvatarSelectChannelDialog getSongAvatarSelectChannelDialog() {
+        return songAvatarSelectChannelDialog;
+    }
+
+
 
     @SuppressLint("NewApi")
     void initView() {
@@ -242,6 +266,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         break;
                     case R.id.upload_pannel:
                         Log.e(TAG, "上传");
+                        addSongDialogMrg.showDialog();
                         break;
                     case R.id.signature_pannel:
                         editUserInfo(2);
@@ -275,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case ImageSelectChannelDialogMrg.TAKE_PHOTO: {
+            case ImageSelectChannelDialogMrg.TAKE_PHOTO_USER: {
                 if (resultCode == RESULT_OK) {
                     try {
                         Bitmap bitmap = ImageResizer.decodeSampleBitmapFromStream(getContentResolver().openInputStream(
@@ -294,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             }
-            case ImageSelectChannelDialogMrg.TAKE_ALBUM: {
+            case ImageSelectChannelDialogMrg.TAKE_ALBUM_USER: {
                 if (resultCode == RESULT_OK) {
                     try {
                         Uri imgUri = data.getData();
@@ -312,6 +337,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         e.printStackTrace();
                         ToastUtils.showErrorToast(this, "相册错误", ToastUtils.LENGTH_SHORT);
                         imageSelectChannelDialogMrg.dismissDialog();
+                    }
+                }
+                break;
+            }
+            case SongAvatarSelectChannelDialog.TAKE_PHOTO_SONG: {
+                if (resultCode == RESULT_OK) {
+                    try {
+                        Bitmap bitmap = ImageResizer.decodeSampleBitmapFromStream(getContentResolver().openInputStream(
+                                songAvatarSelectChannelDialog.getImgUri()), 200, 200);
+                        if (bitmap == null) {
+                            ToastUtils.showErrorToast(this, "相机错误", ToastUtils.LENGTH_LONG);
+                            songAvatarSelectChannelDialog.dismissDialog();
+                        } else {
+                            songAvatarSelectChannelDialog.finishSelect(bitmap);
+                        }
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                        ToastUtils.showErrorToast(this, "相机错误", ToastUtils.LENGTH_SHORT);
+                        songAvatarSelectChannelDialog.dismissDialog();
+                    }
+                }
+                break;
+            }
+            case SongAvatarSelectChannelDialog.TAKE_ALBUM_SONG: {
+                if (resultCode == RESULT_OK) {
+                    try {
+                        Uri imgUri = data.getData();
+                        if (imgUri != null) {
+                            Bitmap bitmap = ImageResizer.decodeSampleBitmapFromStream(getContentResolver().openInputStream(imgUri),
+                                    200, 200);
+                            if (bitmap == null) {
+                                ToastUtils.showErrorToast(this, "相机错误", ToastUtils.LENGTH_LONG);
+                                songAvatarSelectChannelDialog.dismissDialog();
+                            } else {
+                                songAvatarSelectChannelDialog.finishSelect(bitmap);
+                            }
+                        }
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                        ToastUtils.showErrorToast(this, "相册错误", ToastUtils.LENGTH_SHORT);
+                        songAvatarSelectChannelDialog.dismissDialog();
                     }
                 }
                 break;
@@ -363,5 +429,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         LoadingUtils.getINSTANCE(this).dismisDialog();
         imageSelectChannelDialogMrg.dismissDialog();
         ToastUtils.showErrorToast(this, "上传失败", ToastUtils.LENGTH_LONG);
+    }
+
+    @Override
+    public void onAddSongSuccess(Song song) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        addSongDialogMrg.dismissDialog();
+        ToastUtils.showSuccessToast(this, "添加成功，请于上传列表对资源进行更新", ToastUtils.LENGTH_LONG);
+        homeFragment.onUploadSongChange();
+    }
+
+    @Override
+    public void onAddSongFail(String errCode, String errMsg) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        addSongDialogMrg.dismissDialog();
+        ToastUtils.showErrorToast(this, errMsg, ToastUtils.LENGTH_SHORT);
+    }
+
+    @Override
+    public void onChangeSongAvatarSuccess() {
+        ToastUtils.showSuccessToast(this, "上传成功", ToastUtils.LENGTH_SHORT);
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        songAvatarSelectChannelDialog.dismissDialog();
+        homeFragment.onUploadSongChange();
+    }
+
+    @Override
+    public void onChangeSongAvatarFail(String errCode, String errMsg) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        songAvatarSelectChannelDialog.dismissDialog();
+        ToastUtils.showErrorToast(this,"上传失败", ToastUtils.LENGTH_LONG);
     }
 }

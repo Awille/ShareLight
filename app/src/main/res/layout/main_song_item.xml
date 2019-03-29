@@ -48,6 +48,13 @@
             android:layout_marginLeft="@dimen/dp_3"
             android:layout_marginRight="@dimen/dp_10"
             android:text="Awille"/>
+        <ImageView
+            android:id="@+id/song_setting"
+            android:layout_width="@dimen/dp_30"
+            android:layout_height="@dimen/dp_30"
+            android:layout_marginLeft="@dimen/dp_5"
+            android:layout_marginRight="@dimen/dp_10"
+            android:src="@drawable/more"/>
     </LinearLayout>
 
 </LinearLayout>
