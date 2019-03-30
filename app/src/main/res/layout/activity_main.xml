@@ -95,7 +95,7 @@
                 android:orientation="horizontal"
                 android:layout_marginTop="@dimen/dp_20"
                 android:layout_marginLeft="@dimen/dp_20"
-                android:gravity="center_horizontal">
+                android:gravity="center_horizontal|center_vertical">
 
                 <ImageView
                     android:layout_width="@dimen/dp_20"
@@ -119,7 +119,7 @@
                 android:orientation="horizontal"
                 android:layout_marginTop="@dimen/dp_20"
                 android:layout_marginLeft="@dimen/dp_20"
-                android:gravity="center_horizontal">
+                android:gravity="center_horizontal|center_vertical">
 
                 <ImageView
                     android:layout_width="@dimen/dp_20"
@@ -143,7 +143,7 @@
                 android:orientation="horizontal"
                 android:layout_marginTop="@dimen/dp_20"
                 android:layout_marginLeft="@dimen/dp_20"
-                android:gravity="center_horizontal">
+                android:gravity="center_horizontal|center_vertical">
 
                 <ImageView
                     android:layout_width="@dimen/dp_20"
@@ -167,7 +167,7 @@
                 android:orientation="horizontal"
                 android:layout_marginTop="@dimen/dp_20"
                 android:layout_marginLeft="@dimen/dp_20"
-                android:gravity="center_horizontal">
+                android:gravity="center_horizontal|center_vertical">
 
                 <ImageView
                     android:layout_width="@dimen/dp_20"
@@ -181,7 +181,29 @@
                     android:text="个性签名"
                     android:textSize="@dimen/sp_20"
                     android:textColor="@color/FFFFFF"/>
+            </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/exit_pannel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/dp_20"
+                android:layout_marginLeft="@dimen/dp_20"
+                android:gravity="center_horizontal|center_vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_20"
+                    android:layout_height="@dimen/dp_20"
+                    android:src="@drawable/exit"/>
+                <com.example.will.utils.MyTextView
+                    android:id="@+id/exit_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dp_5"
+                    android:text="注销"
+                    android:textSize="@dimen/sp_20"
+                    android:textColor="@color/FFFFFF"/>
             </LinearLayout>
 
             <TextView

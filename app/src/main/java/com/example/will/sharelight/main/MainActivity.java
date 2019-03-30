@@ -32,6 +32,7 @@ import com.example.will.network.retrofit.RetrofitMrg;
 import com.example.will.protocol.song.Song;
 import com.example.will.protocol.user.User;
 import com.example.will.sharelight.R;
+import com.example.will.sharelight.login.LoginActivity;
 import com.example.will.sharelight.main.dialog.AddSongDialogMrg;
 import com.example.will.sharelight.main.dialog.ImageSelectChannelDialogMrg;
 import com.example.will.sharelight.main.dialog.SongAvatarSelectChannelDialog;
@@ -47,6 +48,7 @@ import com.example.will.utils.MyTextView;
 import com.example.will.utils.TextUtils;
 import com.example.will.utils.TimeUtils;
 import com.example.will.utils.loadingutils.LoadingUtils;
+import com.example.will.utils.sharepreferencehelper.SharePreferenceHelper;
 import com.example.will.utils.toast.ToastUtils;
 import com.github.mzule.fantasyslide.FantasyListener;
 import com.github.mzule.fantasyslide.SideBar;
@@ -290,6 +292,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     case R.id.signature_pannel:
                         editUserInfo(2);
                         break;
+                    case R.id.exit_pannel: {
+                        exitUser();
+                        break;
+                    }
                 }
                 return false;
             }
@@ -299,6 +305,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
+    }
+    //注销
+    private void exitUser() {
+        SharePreferenceHelper.setLoginStatus(false);
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void editUserInfo(int mode) {
