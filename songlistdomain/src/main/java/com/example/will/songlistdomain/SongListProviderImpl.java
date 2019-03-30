@@ -179,7 +179,7 @@ public class SongListProviderImpl implements SongListProvider {
     }
 
     @Override
-    public void deleSongFromSongList(DeleteSongFromSongListRequest request, final DeleteSongFromSongListCallback callback) {
+    public void deleteSongFromSongList(DeleteSongFromSongListRequest request, final DeleteSongFromSongListCallback callback) {
         RequestManager.call(songListApiService.deleteSongFromSongList(request), new HttpCallback<DeleteSongFromSongListResponse>() {
             @Override
             public void onSuccess(DeleteSongFromSongListResponse respObj) {

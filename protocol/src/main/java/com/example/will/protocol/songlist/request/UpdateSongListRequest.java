@@ -6,13 +6,13 @@ import com.example.will.protocol.song.request.UploadSongFileRequestData;
 import java.io.Serializable;
 
 public class UpdateSongListRequest extends CommonRequest implements Serializable {
-    private UploadSongFileRequestData data;
+    private UpdateSongListRequestData data;
 
-    public UploadSongFileRequestData getData() {
+    public UpdateSongListRequestData getData() {
         return data;
     }
 
-    public void setData(UploadSongFileRequestData data) {
+    public void setData(UpdateSongListRequestData data) {
         this.data = data;
     }
 }

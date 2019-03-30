@@ -73,7 +73,8 @@ public class SongListSettingDialog implements View.OnClickListener {
         int viewId = v.getId();
         switch (viewId) {
             case R.id.edit_info_pannel: {
-
+                clickChangeSongListInfo();
+                dismissDialog();
                 break;
             }
             case R.id.upload_avatar_pannel: {
@@ -88,13 +89,29 @@ public class SongListSettingDialog implements View.OnClickListener {
         }
     }
 
+    private void clickChangeSongListInfo() {
+        EditSongListInfoDialog.build(context, "修改歌单名称", songList,
+                new EditSongListInfoDialog.EditSongListActionListener() {
+            @Override
+            public void onCertainAction(String songListName, SongList songList) {
+                LoadingUtils.getINSTANCE(context).showLoadingViewGhost();
+                mainPresenter.changeSongListName(songListName, songList.getBasicInfo().getSongListId());
+            }
+
+            @Override
+            public void onCancelAction() {
+                //无动作
+            }
+        }).showDialog();
+    }
+
     private void clickDeleteSongList() {
         WarnningDialog.build(context, "删除歌单", "确认删除本歌单?",
                 new WarnningDialog.ActionListener() {
             @Override
             public void onCertain() {
                 LoadingUtils.getINSTANCE(context).showLoadingViewGhost();
-                mainPresenter.deleSongList(songList.getBasicInfo().getSongListId());
+                mainPresenter.deleteSongList(songList.getBasicInfo().getSongListId());
                 dismissDialog();
             }
 

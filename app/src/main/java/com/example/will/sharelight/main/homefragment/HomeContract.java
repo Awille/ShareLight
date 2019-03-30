@@ -9,6 +9,8 @@ public class HomeContract {
     public interface HomePresenter {
         void querySongLists(long userId);
         void queryUploadSongs(long userId);
+
+        void addSongList(String songListName, long userId);
     }
 
     public interface HomeView {
@@ -17,5 +19,8 @@ public class HomeContract {
 
         void onQueryUploadSongsSuccess(List<Song> songs);
         void onQueryUploadSongFail(String errCode, String errMsg);
+
+        void onAddSongListSuccess();
+        void onAddSongListFail(String errCode, String errMsg);
     }
 }

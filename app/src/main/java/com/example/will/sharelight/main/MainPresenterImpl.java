@@ -16,10 +16,14 @@ import com.example.will.protocol.song.request.UploadSongFileRequestData;
 import com.example.will.protocol.song.response.AddSongResponse;
 import com.example.will.protocol.song.response.UploadSongFileReponse;
 import com.example.will.protocol.songlist.callback.DeleteSongListCallback;
+import com.example.will.protocol.songlist.callback.UpdateSongListInfoCallback;
 import com.example.will.protocol.songlist.callback.UploadSongListFileCallback;
+import com.example.will.protocol.songlist.request.UpdateSongListRequest;
+import com.example.will.protocol.songlist.request.UpdateSongListRequestData;
 import com.example.will.protocol.songlist.request.UploadSongListFileRequest;
 import com.example.will.protocol.songlist.request.UploadSongListFileRequestData;
 import com.example.will.protocol.songlist.response.DeleteSongListResponse;
+import com.example.will.protocol.songlist.response.UpdateSongListResponse;
 import com.example.will.protocol.songlist.response.UploadSongListFileResponse;
 import com.example.will.protocol.user.User;
 import com.example.will.protocol.user.callbcak.ModifyUserAvatarCallback;
@@ -166,7 +170,7 @@ public class MainPresenterImpl implements MainContract.MainPresenter {
     }
 
     @Override
-    public void deleSongList(long songListId) {
+    public void deleteSongList(long songListId) {
         MusicProvider.getINSTANCE().getSongListProvider().deleteSongList(songListId, new DeleteSongListCallback() {
             @Override
             public void onDeleteSongListSuccess(DeleteSongListResponse response) {
@@ -176,6 +180,27 @@ public class MainPresenterImpl implements MainContract.MainPresenter {
             @Override
             public void onDeleteSongListFail(String errCode, String errMsg) {
                 mainView.onDeleteSongListFail(errCode, errMsg);
+            }
+        });
+    }
+
+    @Override
+    public void changeSongListName(String name, long songListId) {
+        UpdateSongListRequest updateSongListRequest = new UpdateSongListRequest();
+        updateSongListRequest.setService("302");
+        UpdateSongListRequestData data = new UpdateSongListRequestData();
+        data.setName(name);
+        data.setSongListId(songListId);
+        updateSongListRequest.setData(data);
+        MusicProvider.getINSTANCE().getSongListProvider().updateSongListInfo(updateSongListRequest, new UpdateSongListInfoCallback() {
+            @Override
+            public void onUpdateSongListInfoSucess(UpdateSongListResponse response) {
+                mainView.onChangeSongListNameSuccess();
+            }
+
+            @Override
+            public void onUpdateSongListInfoFail(String errCode, String errMsg) {
+                mainView.onChangeSongListNameFail(errCode, errMsg);
             }
         });
     }

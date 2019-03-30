@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 
 import com.alibaba.fastjson.JSON;
 import com.example.will.datacontext.MusicDataContext;
+import com.example.will.musicprovider.MusicProvider;
 import com.example.will.network.imageloader.ImageLoader;
 import com.example.will.network.retrofit.RetrofitMrg;
 import com.example.will.protocol.song.Song;
@@ -21,6 +22,7 @@ import com.example.will.sharelight.R;
 import com.example.will.sharelight.main.MainActivity;
 import com.example.will.sharelight.main.adapter.SongAdapter;
 import com.example.will.sharelight.main.adapter.SongListAdapter;
+import com.example.will.sharelight.main.dialog.EditSongListInfoDialog;
 import com.example.will.utils.CircleImageView;
 import com.example.will.utils.MyTextView;
 import com.example.will.utils.TextUtils;
@@ -155,6 +157,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Home
         switch (viewId) {
             case R.id.song_list_setting: {
                 Log.e(TAG, "点击了设置按钮");
+                clickSetting();
                 break;
             }
             case R.id.hide_list_pannel: {
@@ -166,6 +169,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Home
                 break;
             }
         }
+    }
+
+    private void clickSetting() {
+        EditSongListInfoDialog.build(getActivity(), "添加歌单", null,
+                new EditSongListInfoDialog.EditSongListActionListener() {
+            @Override
+            public void onCertainAction(String songListName, SongList songList) {
+                LoadingUtils.getINSTANCE(getActivity()).showLoadingViewGhost();
+                homePrenster.addSongList(songListName, MusicDataContext.getINSTANCE().getUser().getUserId());
+            }
+
+            @Override
+            public void onCancelAction() {
+                //无动作
+            }
+        }).showDialog();
     }
 
     @Override
@@ -191,7 +210,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Home
 
     @Override
     public void onQueryUploadSongFail(String errCode, String errMsg) {
-        ToastUtils.showSuccessToast(getActivity(), errMsg, ToastUtils.LENGTH_LONG);
+        ToastUtils.showErrorToast(getActivity(), errMsg, ToastUtils.LENGTH_LONG);
+    }
+
+    @Override
+    public void onAddSongListSuccess() {
+        LoadingUtils.getINSTANCE(getActivity()).dismisDialog();
+        ToastUtils.showSuccessToast(getActivity(), "添加成功", ToastUtils.LENGTH_SHORT);
+        //更新歌单
+        this.onChangeSongList();
+    }
+
+    @Override
+    public void onAddSongListFail(String errCode, String errMsg) {
+        LoadingUtils.getINSTANCE(getActivity()).dismisDialog();
+        ToastUtils.showErrorToast(getActivity(), errMsg, ToastUtils.LENGTH_LONG);
     }
 
     @Override

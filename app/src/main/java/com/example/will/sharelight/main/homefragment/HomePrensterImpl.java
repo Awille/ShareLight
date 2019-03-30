@@ -5,8 +5,13 @@ import android.util.Log;
 import com.alibaba.fastjson.JSON;
 import com.example.will.musicprovider.MusicProvider;
 import com.example.will.protocol.song.callback.QuerySongsCallback;
+import com.example.will.protocol.song.request.AddSongRequestData;
 import com.example.will.protocol.song.response.QuerySongsResponse;
+import com.example.will.protocol.songlist.callback.AddSongListCallback;
 import com.example.will.protocol.songlist.callback.QuerySongListsCallback;
+import com.example.will.protocol.songlist.request.AddSongListRequest;
+import com.example.will.protocol.songlist.request.AddSongListRequestData;
+import com.example.will.protocol.songlist.response.AddSongListResponse;
 import com.example.will.protocol.songlist.response.QuerySongListsResponse;
 
 public class HomePrensterImpl implements HomeContract.HomePresenter {
@@ -47,6 +52,26 @@ public class HomePrensterImpl implements HomeContract.HomePresenter {
             @Override
             public void onQuerySongFail(String errCode, String errMsg) {
                 homeView.onQueryUploadSongFail(errCode, errMsg);
+            }
+        });
+    }
+
+    @Override
+    public void addSongList(String songListName, long userId) {
+        AddSongListRequest addSongListRequest = new AddSongListRequest();
+        AddSongListRequestData data = new AddSongListRequestData();
+        data.setName(songListName);
+        data.setUserId(userId);
+        addSongListRequest.setData(data);
+        MusicProvider.getINSTANCE().getSongListProvider().addSongList(addSongListRequest, new AddSongListCallback() {
+            @Override
+            public void onAddSongListSuccess(AddSongListResponse response) {
+                homeView.onAddSongListSuccess();
+            }
+
+            @Override
+            public void onAddSongListFail(String errCode, String errMsg) {
+                homeView.onAddSongListFail(errCode, errMsg);
             }
         });
     }

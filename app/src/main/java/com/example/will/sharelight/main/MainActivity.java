@@ -436,6 +436,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ToastUtils.showErrorToast(this, "删除失败", ToastUtils.LENGTH_LONG);
     }
 
+    @Override
+    public void onChangeSongListNameSuccess() {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        ToastUtils.showSuccessToast(this, "修改成功", ToastUtils.LENGTH_SHORT);
+        homeFragment.onChangeSongList();
+    }
+
+    @Override
+    public void onChangeSongListNameFail(String errCode, String errMsg) {
+        LoadingUtils.getINSTANCE(this).dismisDialog();
+        ToastUtils.showErrorToast(this, "修改失败", ToastUtils.LENGTH_LONG);
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

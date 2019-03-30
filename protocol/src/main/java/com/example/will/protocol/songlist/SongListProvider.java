@@ -67,7 +67,7 @@ public interface SongListProvider extends BasicProvider {
      * @param request
      * @param callback
      */
-    void deleSongFromSongList(DeleteSongFromSongListRequest request, DeleteSongFromSongListCallback callback);
+    void deleteSongFromSongList(DeleteSongFromSongListRequest request, DeleteSongFromSongListCallback callback);
 
     /**
      * 删除歌单
