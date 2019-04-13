@@ -24,6 +24,14 @@
         <activity android:name=".main.MainActivity"
             android:launchMode="singleTask">
         </activity>
+        <activity android:name=".palyer.PlayerActivity"
+            android:launchMode="singleInstance">
+        </activity>
+        <service android:name=".palyer.MusicPlayService"
+            android:process=":remote"
+            android:exported="true">
+
+        </service>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

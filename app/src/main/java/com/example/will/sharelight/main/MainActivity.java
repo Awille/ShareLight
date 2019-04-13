@@ -2,7 +2,6 @@ package com.example.will.sharelight.main;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.Nullable;
@@ -42,6 +41,7 @@ import com.example.will.sharelight.main.dialog.SongSettingDialog;
 import com.example.will.sharelight.main.dialog.UploadSongResourceDialog;
 import com.example.will.sharelight.main.dialog.UserInfoEditDialogMrg;
 import com.example.will.sharelight.main.homefragment.HomeFragment;
+import com.example.will.sharelight.main.square.SquareFragment;
 import com.example.will.utils.CircleImageView;
 import com.example.will.utils.FileUtils;
 import com.example.will.utils.MyTextView;

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <android.support.v7.widget.CardView
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:cardUseCompatPadding="true"
+        app:cardPreventCornerOverlap="false"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="20dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal|center_vertical"
+            android:background="@drawable/login_bg">
+            <com.mikhaellopez.circularfillableloaders.CircularFillableLoaders
+                android:id="@+id/circularFillableLoaders"
+                android:layout_marginTop="@dimen/dp_20"
+                android:layout_width="@dimen/dp_300"
+                android:layout_height="@dimen/dp_300"
+                android:src="@drawable/music"
+                app:cfl_progress="80"
+                app:cfl_wave_color="#3f51b5" />
+
+            <ImageView
+                android:id="@+id/action"
+                android:layout_width="@dimen/dp_80"
+                android:layout_height="@dimen/dp_80"
+                android:layout_marginTop="@dimen/dp_40"
+                android:src="@drawable/start"/>
+
+
+            <com.larswerkman.lobsterpicker.sliders.LobsterShadeSlider
+                android:id="@+id/shadeslider"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_20" />
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+</FrameLayout>

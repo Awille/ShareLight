@@ -1,6 +1,8 @@
 package com.example.will.sharelight.main.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -8,11 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.alibaba.fastjson.JSON;
 import com.example.will.network.imageloader.ImageLoader;
 import com.example.will.network.retrofit.RetrofitMrg;
 import com.example.will.protocol.song.Song;
 import com.example.will.sharelight.R;
 import com.example.will.sharelight.main.MainActivity;
+import com.example.will.sharelight.palyer.PlayerActivity;
 import com.example.will.utils.TextUtils;
 
 import java.util.List;
@@ -82,6 +86,12 @@ public class SongAdapter extends RecyclerView.Adapter<SongViewHolder> {
             @Override
             public void onClick(View v) {
                 Log.e(TAG, "点击歌曲 " + position);
+                Intent intent = new Intent(context, PlayerActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("SONG_LIST", JSON.toJSONString(songs));
+                bundle.putInt("CURRENT_INDEX", position);
+                intent.putExtras(bundle);
+                context.startActivity(intent);
             }
         });
 
