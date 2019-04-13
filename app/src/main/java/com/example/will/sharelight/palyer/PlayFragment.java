@@ -1,6 +1,7 @@
 package com.example.will.sharelight.palyer;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.example.will.network.imageloader.ImageLoader;
 import com.example.will.network.retrofit.RetrofitMrg;
 import com.example.will.protocol.CommonConstant;
@@ -34,33 +36,27 @@ public class PlayFragment extends Fragment implements PlayerBroadcast.onBroadcas
     private ImageView action;
     private LobsterShadeSlider shadeSlider;
 
-    public static boolean isPlay = true;
-    public static List<Song> songList;
-    public static int currentIndex = 0;
 
-    public static void initPlayFragment(boolean isPlay, List<Song> songList,int currentIndex) {
-        setIsPlay(isPlay);
-        setSongList(songList);
-        setCurrentIndex(currentIndex);
+    public boolean isPlay = true;
+
+    private Song currentSong;
+
+    public PlayFragment() {
+        super();
     }
 
-    public static void setIsPlay(boolean isPlay) {
-        PlayFragment.isPlay = isPlay;
-    }
 
-    public static void setSongList(List<Song> songList) {
-        PlayFragment.songList = songList;
-    }
 
-    public static void setCurrentIndex(int currentIndex) {
-        PlayFragment.currentIndex = currentIndex;
-    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.music_single_play, container, false);
         initView(view);
+        if (getArguments() != null) {
+            currentSong = JSON.parseObject(getArguments().getString("CURRENT_SONG"), Song.class);
+        }
         return view;
     }
 
@@ -74,7 +70,7 @@ public class PlayFragment extends Fragment implements PlayerBroadcast.onBroadcas
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         setActionStatus(action);
-        ImageLoader.build(getActivity()).bindBitmap(RetrofitMrg.baseUrl + songList.get(currentIndex).getAvatarUrl(),
+        ImageLoader.build(getActivity()).bindBitmap(RetrofitMrg.baseUrl + currentSong.getAvatarUrl(),
                 circularFillableLoaders, 200, 200);
         shadeSlider.addOnColorListener(new OnColorListener() {
             @Override
@@ -94,6 +90,7 @@ public class PlayFragment extends Fragment implements PlayerBroadcast.onBroadcas
         });
         ((PlayerActivity)getActivity()).getPlayerBroadcast().setListener(this);
         LoadingUtils.getINSTANCE(getActivity()).showLoadingViewGhost();
+        Log.e(TAG, "onViewCreated");
     }
 
     public void setActionStatus(ImageView action) {

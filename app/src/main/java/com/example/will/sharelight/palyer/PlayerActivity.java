@@ -35,6 +35,10 @@ public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPag
 
     private Handler mainHandler = new Handler();
 
+    public PlayerBroadcast getPlayerBroadcast() {
+        return playerBroadcast;
+    }
+
     private PlayerBroadcast playerBroadcast;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -55,10 +59,6 @@ public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPag
         return mBinder;
     }
 
-
-    public PlayerBroadcast getPlayerBroadcast() {
-        return playerBroadcast;
-    }
 
 
     @Override
@@ -131,7 +131,7 @@ public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPag
 
     @Override
     public void onPageSelected(int i) {
-        PlayFragmentAdapter.initPlayFragmentAdapter(getPlayStatus(), songs, i);
+        PlayFragmentAdapter.initPlayFragmentAdapter(true, songs, i);
         Log.w(TAG, "onPageSelected " + i);
     }
 

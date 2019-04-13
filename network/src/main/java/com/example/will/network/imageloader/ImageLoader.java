@@ -283,7 +283,7 @@ public class ImageLoader {
         } else {
             cachePath = context.getCacheDir().getPath();
         }
-        Log.e(TAG, "DiskCache path:" + cachePath + File.pathSeparator + uniqueName);
+        Log.w(TAG, "DiskCache path:" + cachePath + File.pathSeparator + uniqueName);
         return new File(cachePath + File.pathSeparator + uniqueName);
     }
 
@@ -294,20 +294,20 @@ public class ImageLoader {
     public Bitmap loadBitmap(String uri, int reqWidth, int reqHeight) {
         Bitmap bitmap = loadBitmapFromMemoryCache(uri);
         if (bitmap != null) {
-            Log.e(TAG, "load bitmap from memoryCache");
+            Log.w(TAG, "load bitmap from memoryCache");
             return bitmap;
         }
         try {
             bitmap = loadBitmapFromDiskCache(uri, reqWidth, reqHeight);
             if (bitmap != null) {
-                Log.e(TAG, "load bitmap from diskCache");
+                Log.w(TAG, "load bitmap from diskCache");
                 return bitmap;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         if (bitmap == null &&!mIsDiskLruCacheCreated) {
-            Log.e(TAG, "diskcache is not created");
+            Log.w(TAG, "diskcache is not created");
             bitmap = downloadBitmapFromUrl(uri);
         }
         if (bitmap == null) {

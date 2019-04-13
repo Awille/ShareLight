@@ -24,6 +24,7 @@ import static com.example.will.protocol.CommonConstant.MusicPlayAction.GET_POSIT
 import static com.example.will.protocol.CommonConstant.MusicPlayAction.MUSIC_PREPARED;
 import static com.example.will.protocol.CommonConstant.MusicPlayAction.PAUSE;
 import static com.example.will.protocol.CommonConstant.MusicPlayAction.PLAY;
+import static com.example.will.protocol.CommonConstant.MusicPlayAction.PLAY_EXACT_SONG;
 import static com.example.will.protocol.CommonConstant.MusicPlayAction.PLAY_LAST;
 import static com.example.will.protocol.CommonConstant.MusicPlayAction.PLAY_NEXT;
 import static com.example.will.protocol.CommonConstant.MusicPlayAction.PLAY_STATUS;
@@ -122,6 +123,28 @@ public class MusicPlayService extends Service {
         }
     }
 
+
+    private void playSongInPosition(int position) {
+        if (position < 0 && position >= songList.size()) {
+            return;
+        }
+
+        if (position == currentSongIndex) {
+            return;
+        }
+
+        if (mediaPlayer != null) {
+            mediaPlayer.reset();
+            try {
+                mediaPlayer.setDataSource(RetrofitMrg.baseUrl + songList.get(position).getResourceUrl());
+                mediaPlayer.prepareAsync();
+                currentSongIndex = position;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void playNext() {
         int nextIndex = currentSongIndex + 1;
         if (songList.size() == 0) {
@@ -172,34 +195,34 @@ public class MusicPlayService extends Service {
             switch (code){
                 case PLAY:  {
                     play();
-                    break;
+                    return true;
                 }
                 case PAUSE: {
                     pause();
-                    break;
+                    return true;
                 }
                 case PLAY_NEXT: {
                     playNext();
-                    break;
+                    return true;
                 }
                 case PLAY_LAST: {
                     playLast();
-                    break;
+                    return true;
                 }
                 case PLAY_STATUS: {
                     reply.setDataPosition(0);
                     reply.writeInt(mediaPlayer.isPlaying() ? 1 : 0);
-                    break;
+                    return true;
                 }
                 case SET_POSITION: {
                     data.setDataPosition(0);
                     setPosition(data.readInt());
-                    break;
+                    return true;
                 }
                 case GET_POSITION: {
                     reply.setDataPosition(0);
                     reply.writeInt(getPosition());
-                    break;
+                    return true;
                 }
                 case MUSIC_PREPARED: {
                     if (isPrepared) {
@@ -207,6 +230,10 @@ public class MusicPlayService extends Service {
                     } else {
                         reply.writeInt(1);
                     }
+                    return true;
+                }
+                case PLAY_EXACT_SONG: {
+                    playSongInPosition(data.readInt());
                     return true;
                 }
             }

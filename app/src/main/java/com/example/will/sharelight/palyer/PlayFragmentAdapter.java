@@ -1,15 +1,20 @@
 package com.example.will.sharelight.palyer;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.util.Log;
 import android.view.ViewGroup;
 
+import com.alibaba.fastjson.JSON;
 import com.example.will.protocol.song.Song;
 
 import java.util.List;
 
 public class PlayFragmentAdapter extends FragmentPagerAdapter {
+
+    private static final String TAG = "PlayFragmentAdapter";
 
     private static List<Song> songList;
     private static int currentIndex;
@@ -32,27 +37,31 @@ public class PlayFragmentAdapter extends FragmentPagerAdapter {
     }
 
     public static void setIsPlay(boolean isPlay) {
-        PlayFragment.isPlay = isPlay;
+        PlayFragmentAdapter.isPlay = isPlay;
     }
 
     public static void setSongList(List<Song> songList) {
-        PlayFragment.songList = songList;
+        PlayFragmentAdapter.songList = songList;
     }
 
     public static void setCurrentIndex(int currentIndex) {
-        PlayFragment.currentIndex = currentIndex;
+        PlayFragmentAdapter.currentIndex = currentIndex;
     }
 
 
 
     @Override
     public Fragment getItem(int i) {
-        return new PlayFragment();
+        PlayFragment playFragment = new PlayFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("CURRENT_SONG", JSON.toJSONString(songList.get(i)));
+        playFragment.setArguments(bundle);
+        return playFragment;
     }
 
     @Override
     public int getCount() {
-        return PlayFragment.songList.size();
+        return PlayFragmentAdapter.songList.size();
     }
 
 
