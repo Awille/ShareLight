@@ -19,7 +19,6 @@ import com.example.will.protocol.songlist.SongList;
 
 import java.io.IOException;
 import java.util.List;
-
 import static com.example.will.protocol.CommonConstant.MusicPlayAction.GET_POSITION;
 import static com.example.will.protocol.CommonConstant.MusicPlayAction.MUSIC_PREPARED;
 import static com.example.will.protocol.CommonConstant.MusicPlayAction.PAUSE;
@@ -31,7 +30,7 @@ import static com.example.will.protocol.CommonConstant.MusicPlayAction.PLAY_STAT
 import static com.example.will.protocol.CommonConstant.MusicPlayAction.SET_POSITION;
 
 
-//todo 跨进程启动
+//跨进程启动
 public class MusicPlayService extends Service {
 
     private static final String TAG = "MusicPlayService";
@@ -61,7 +60,11 @@ public class MusicPlayService extends Service {
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    sendBroadcast(new Intent(CommonConstant.BroadcastName.MUSIC_PREPARED));
+                    Intent broadcastIntent = new Intent(CommonConstant.BroadcastName.MUSIC_PREPARED);
+                    Bundle broadcastBundle = new Bundle();
+                    broadcastBundle.putInt("SONG_DURATION", mediaPlayer.getDuration());
+                    broadcastIntent.putExtras(broadcastBundle);
+                    sendBroadcast(broadcastIntent);
                     Log.e(TAG, "音乐加载完成");
                     isPrepared = true;
                     mediaPlayer.start();
@@ -168,6 +171,8 @@ public class MusicPlayService extends Service {
         }
     }
 
+
+
     private void playLast() {
         int lastIndex = currentSongIndex - 1;
         if (songList.size() == 0) {
@@ -210,17 +215,14 @@ public class MusicPlayService extends Service {
                     return true;
                 }
                 case PLAY_STATUS: {
-                    reply.setDataPosition(0);
                     reply.writeInt(mediaPlayer.isPlaying() ? 1 : 0);
                     return true;
                 }
                 case SET_POSITION: {
-                    data.setDataPosition(0);
                     setPosition(data.readInt());
                     return true;
                 }
                 case GET_POSITION: {
-                    reply.setDataPosition(0);
                     reply.writeInt(getPosition());
                     return true;
                 }

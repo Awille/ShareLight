@@ -1,6 +1,8 @@
 package com.example.will.sharelight.palyer;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -9,6 +11,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -24,19 +27,26 @@ import com.gigamole.infinitecycleviewpager.HorizontalInfiniteCycleViewPager;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
+public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, PlayerBroadcast.onBroadcastRecieveListener {
 
     private static final String TAG = "PlayerActivity";
 
     private HorizontalInfiniteCycleViewPager songViewPager;
+
     private PlayFragmentAdapter playFragmentAdapter;
     private List<Song> songs = new ArrayList<>();
     private int currentSongIndex;
+
+    private Context context = this;
 
     private Handler mainHandler = new Handler();
 
     public PlayerBroadcast getPlayerBroadcast() {
         return playerBroadcast;
+    }
+
+    public PlayFragmentAdapter getPlayFragmentAdapter() {
+        return playFragmentAdapter;
     }
 
     private PlayerBroadcast playerBroadcast;
@@ -45,6 +55,8 @@ public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPag
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mBinder = service;
+            //这里线程开启
+            GetProgressThread.getINSTANCE(context, mBinder, mainHandler).start();
         }
 
         @Override
@@ -60,6 +72,10 @@ public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPag
     }
 
 
+    public HorizontalInfiniteCycleViewPager getSongViewPager() {
+        return songViewPager;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +84,7 @@ public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPag
         initView();
         initData(getIntent());
         playerBroadcast = new PlayerBroadcast();
+        playerBroadcast.setListener(this);
         registerReceiver(playerBroadcast, new IntentFilter(
                 CommonConstant.BroadcastName.MUSIC_PREPARED));
     }
@@ -122,6 +139,7 @@ public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPag
         super.onDestroy();
         Log.e(TAG, "执行了 onDestry");
         unregisterReceiver(playerBroadcast);
+        GetProgressThread.getINSTANCE(this, mBinder, mainHandler).interrupt();
         unbindService(serviceConnection);
     }
 
@@ -182,6 +200,13 @@ public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPag
             return false;
         } else {
             return true;
+        }
+    }
+
+    @Override
+    public void onSongPrepared(int duration) {
+        if (playFragmentAdapter != null) {
+            playFragmentAdapter.getmCurrentFragment().onSongPrepared(duration);
         }
     }
 }

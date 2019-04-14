@@ -14,7 +14,6 @@ public interface CommonConstant {
         int GET_POSITION = 106;
         int SET_POSITION = 107;
         int MUSIC_PREPARED = 108;
-        int CURRENT_SONG_INDEX = 109;
         int PLAY_EXACT_SONG = 201;
     }
 

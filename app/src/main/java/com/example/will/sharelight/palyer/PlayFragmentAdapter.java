@@ -16,9 +16,15 @@ public class PlayFragmentAdapter extends FragmentPagerAdapter {
 
     private static final String TAG = "PlayFragmentAdapter";
 
+    private PlayFragment mCurrentFragment;
+
     private static List<Song> songList;
     private static int currentIndex;
     private static boolean isPlay;
+
+    public PlayFragment getmCurrentFragment() {
+        return mCurrentFragment;
+    }
 
     public PlayFragmentAdapter(FragmentManager fm) {
         super(fm);
@@ -46,6 +52,12 @@ public class PlayFragmentAdapter extends FragmentPagerAdapter {
 
     public static void setCurrentIndex(int currentIndex) {
         PlayFragmentAdapter.currentIndex = currentIndex;
+    }
+
+    @Override
+    public void setPrimaryItem(ViewGroup container, int position, Object object) {
+        mCurrentFragment = (PlayFragment) object;
+        super.setPrimaryItem(container, position, object);
     }
 
 

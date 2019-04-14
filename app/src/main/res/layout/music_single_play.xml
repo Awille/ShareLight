@@ -24,7 +24,7 @@
                 android:layout_width="@dimen/dp_300"
                 android:layout_height="@dimen/dp_300"
                 android:src="@drawable/music"
-                app:cfl_progress="80"
+                app:cfl_progress="60"
                 app:cfl_wave_color="#3f51b5" />
 
             <ImageView
@@ -35,11 +35,40 @@
                 android:src="@drawable/start"/>
 
 
-            <com.larswerkman.lobsterpicker.sliders.LobsterShadeSlider
-                android:id="@+id/shadeslider"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/progress_pannel"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_20" />
+                android:layout_marginTop="@dimen/dp_30"
+                android:layout_marginLeft="@dimen/dp_15"
+                android:layout_marginRight="@dimen/dp_15"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/song_progress"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="0:00"/>
+
+                <SeekBar
+                    android:id="@+id/seekBarProgress"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/dp_10"
+                    android:layout_gravity="center"
+                    android:layout_weight="5"
+                    android:progress="0" />
+
+                <TextView
+                    android:id="@+id/song_duration"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="4:30"/>
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </android.support.v7.widget.CardView>

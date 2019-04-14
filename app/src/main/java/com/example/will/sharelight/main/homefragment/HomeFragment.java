@@ -189,7 +189,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Home
 
     @Override
     public void onQuerySongListsSuccess(List<SongList> songLists) {
-        Log.e(TAG, "歌单查询成功 " + JSON.toJSONString(songLists));
         this.songLists = songLists;
         songListAdapter.setSongLists(songLists);
         songListAdapter.notifyDataSetChanged();
@@ -202,7 +201,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Home
 
     @Override
     public void onQueryUploadSongsSuccess(List<Song> songs) {
-        Log.e(TAG, "上传作品查询成功 " + JSON.toJSONString(songs));
         uploadSongs = songs;
         songAdapter.setSongs(songs);
         songAdapter.notifyDataSetChanged();

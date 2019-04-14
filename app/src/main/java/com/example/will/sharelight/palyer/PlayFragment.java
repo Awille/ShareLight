@@ -12,6 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
@@ -21,6 +24,7 @@ import com.example.will.protocol.CommonConstant;
 import com.example.will.protocol.song.Song;
 import com.example.will.sharelight.R;
 import com.example.will.sharelight.palyer.broadcast.PlayerBroadcast;
+import com.example.will.utils.TimeUtils;
 import com.example.will.utils.loadingutils.LoadingUtils;
 import com.example.will.utils.toast.ToastUtils;
 import com.larswerkman.lobsterpicker.OnColorListener;
@@ -29,12 +33,16 @@ import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
 
 import java.util.List;
 
-public class PlayFragment extends Fragment implements PlayerBroadcast.onBroadcastRecieveListener {
+public class PlayFragment extends Fragment {
 
     private static final String TAG = "PlayFragment";
     private CircularFillableLoaders circularFillableLoaders;
     private ImageView action;
-    private LobsterShadeSlider shadeSlider;
+    private SeekBar seekBar;
+
+    private LinearLayout progressPannel;
+    private TextView progressTxt;
+    private TextView durationTxt;
 
 
     public boolean isPlay = true;
@@ -44,6 +52,17 @@ public class PlayFragment extends Fragment implements PlayerBroadcast.onBroadcas
     public PlayFragment() {
         super();
     }
+
+    public void setSongProgress(int progress) {
+        if (seekBar != null) {
+            seekBar.setProgress(progress);
+        }
+        if (progressTxt != null) {
+            progressTxt.setText(TimeUtils.fromS2MS(progress));
+        }
+        Log.e(TAG, "进度控制 " + progress);
+    }
+
 
 
 
@@ -64,7 +83,11 @@ public class PlayFragment extends Fragment implements PlayerBroadcast.onBroadcas
     void initView(View view) {
         circularFillableLoaders = view.findViewById(R.id.circularFillableLoaders);
         action = view.findViewById(R.id.action);
-        shadeSlider = view.findViewById(R.id.shadeslider);
+        seekBar = view.findViewById(R.id.seekBarProgress);
+        progressTxt = view.findViewById(R.id.song_progress);
+        durationTxt = view.findViewById(R.id.song_duration);
+        progressPannel = view.findViewById(R.id.progress_pannel);
+        progressPannel.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -72,14 +95,20 @@ public class PlayFragment extends Fragment implements PlayerBroadcast.onBroadcas
         setActionStatus(action);
         ImageLoader.build(getActivity()).bindBitmap(RetrofitMrg.baseUrl + currentSong.getAvatarUrl(),
                 circularFillableLoaders, 200, 200);
-        shadeSlider.addOnColorListener(new OnColorListener() {
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onColorChanged(int color) {
-                circularFillableLoaders.setColor(color);
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                circularFillableLoaders.setProgress(progress);
             }
 
             @Override
-            public void onColorSelected(int color) {
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
         action.setOnClickListener(new View.OnClickListener() {
@@ -88,7 +117,6 @@ public class PlayFragment extends Fragment implements PlayerBroadcast.onBroadcas
                 changePlayStatus(action);
             }
         });
-        ((PlayerActivity)getActivity()).getPlayerBroadcast().setListener(this);
         LoadingUtils.getINSTANCE(getActivity()).showLoadingViewGhost();
         Log.e(TAG, "onViewCreated");
     }
@@ -137,8 +165,11 @@ public class PlayFragment extends Fragment implements PlayerBroadcast.onBroadcas
         }
     }
 
-    @Override
-    public void onSongPrepared() {
+    public void onSongPrepared(int duration) {
+        progressTxt.setText("0:00");
+        durationTxt.setText(TimeUtils.fromS2MS(duration));
+        seekBar.setMax(duration);
+        progressPannel.setVisibility(View.VISIBLE);
         LoadingUtils.getINSTANCE(getActivity()).dismisDialog();
     }
 }
