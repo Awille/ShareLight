@@ -22,6 +22,7 @@ import com.example.will.protocol.song.Song;
 import com.example.will.sharelight.R;
 import com.example.will.sharelight.palyer.broadcast.PlayerBroadcast;
 import com.example.will.utils.TextUtils;
+import com.example.will.utils.loadingutils.LoadingUtils;
 import com.gigamole.infinitecycleviewpager.HorizontalInfiniteCycleViewPager;
 
 import java.util.ArrayList;
@@ -140,6 +141,7 @@ public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPag
         Log.e(TAG, "执行了 onDestry");
         unregisterReceiver(playerBroadcast);
         GetProgressThread.getINSTANCE(this, mBinder, mainHandler).interrupt();
+        GetProgressThread.getINSTANCE(this, mBinder, mainHandler).setInterrupted(true);
         unbindService(serviceConnection);
     }
 
@@ -150,12 +152,29 @@ public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPag
     @Override
     public void onPageSelected(int i) {
         PlayFragmentAdapter.initPlayFragmentAdapter(true, songs, i);
+        LoadingUtils.getINSTANCE(this).showLoadingViewGhost();
+        playExactSong(i);
         Log.w(TAG, "onPageSelected " + i);
     }
 
     @Override
     public void onPageScrollStateChanged(int i) {
 
+    }
+
+
+    private void playExactSong(int position) {
+        Parcel data = Parcel.obtain();
+        Parcel reply = Parcel.obtain();
+        try {
+            data.writeInt(position);
+            mBinder.transact(CommonConstant.MusicPlayAction.PLAY_EXACT_SONG, data, reply, 0);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } finally {
+            data.recycle();
+            reply.recycle();
+        }
     }
 
 
@@ -204,9 +223,16 @@ public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPag
     }
 
     @Override
-    public void onSongPrepared(int duration) {
+    public void onSongPrepared(boolean isSame, int duration) {
         if (playFragmentAdapter != null) {
-            playFragmentAdapter.getmCurrentFragment().onSongPrepared(duration);
+            playFragmentAdapter.getmCurrentFragment().onSongPrepared(isSame, duration);
+        }
+    }
+
+    @Override
+    public void onSongFinished(int nextIndex) {
+        if (playFragmentAdapter != null) {
+            songViewPager.setCurrentItem(nextIndex);
         }
     }
 }

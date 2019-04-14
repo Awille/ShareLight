@@ -16,6 +16,12 @@ public class GetProgressThread extends Thread {
     private IBinder mBinder;
     private Handler mainHandler;
 
+    private boolean isInterrupted = false;
+
+    public void setInterrupted(boolean interrupted) {
+        isInterrupted = interrupted;
+    }
+
     public GetProgressThread(Context context, IBinder mBinder, Handler mainHandler) {
         this.context = context;
         this.mBinder = mBinder;
@@ -36,7 +42,8 @@ public class GetProgressThread extends Thread {
     @Override
     public void run() {
         while (true) {
-            if (isInterrupted()) {
+            if (isInterrupted) {
+                INSTANCE = null;
                 break;
             }
             Parcel data = Parcel.obtain();

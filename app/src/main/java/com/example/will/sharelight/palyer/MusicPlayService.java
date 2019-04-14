@@ -62,6 +62,7 @@ public class MusicPlayService extends Service {
                 public void onPrepared(MediaPlayer mp) {
                     Intent broadcastIntent = new Intent(CommonConstant.BroadcastName.MUSIC_PREPARED);
                     Bundle broadcastBundle = new Bundle();
+                    broadcastBundle.putBoolean("SAME_SONG", false);
                     broadcastBundle.putInt("SONG_DURATION", mediaPlayer.getDuration());
                     broadcastIntent.putExtras(broadcastBundle);
                     sendBroadcast(broadcastIntent);
@@ -73,8 +74,16 @@ public class MusicPlayService extends Service {
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
+                    Intent broadcastIntent = new Intent(CommonConstant.BroadcastName.MUSIC_PREPARED);
+                    Bundle broadcastBundle = new Bundle();
+                    int nextIndex = currentSongIndex + 1;
+                    if (nextIndex >= songList.size()) {
+                        nextIndex = 0;
+                    }
+                    broadcastBundle.putString("NEXT_SONG_INDEX", String.valueOf(nextIndex));
+                    broadcastIntent.putExtras(broadcastBundle);
+                    sendBroadcast(broadcastIntent);
                     Log.e(TAG, "播放完成");
-                    playNext();
                 }
             });
         } catch (IOException e) {
@@ -133,6 +142,11 @@ public class MusicPlayService extends Service {
         }
 
         if (position == currentSongIndex) {
+            Intent broadcastIntent = new Intent(CommonConstant.BroadcastName.MUSIC_PREPARED);
+            Bundle broadcastBundle = new Bundle();
+            broadcastBundle.putBoolean("SAME_SONG", true);
+            broadcastIntent.putExtras(broadcastBundle);
+            sendBroadcast(broadcastIntent);
             return;
         }
 

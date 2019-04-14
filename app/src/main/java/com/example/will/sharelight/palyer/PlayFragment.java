@@ -23,15 +23,11 @@ import com.example.will.network.retrofit.RetrofitMrg;
 import com.example.will.protocol.CommonConstant;
 import com.example.will.protocol.song.Song;
 import com.example.will.sharelight.R;
-import com.example.will.sharelight.palyer.broadcast.PlayerBroadcast;
 import com.example.will.utils.TimeUtils;
 import com.example.will.utils.loadingutils.LoadingUtils;
 import com.example.will.utils.toast.ToastUtils;
-import com.larswerkman.lobsterpicker.OnColorListener;
-import com.larswerkman.lobsterpicker.sliders.LobsterShadeSlider;
 import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
 
-import java.util.List;
 
 public class PlayFragment extends Fragment {
 
@@ -43,6 +39,9 @@ public class PlayFragment extends Fragment {
     private LinearLayout progressPannel;
     private TextView progressTxt;
     private TextView durationTxt;
+
+
+    private int colorChange = 0;
 
 
     public boolean isPlay = true;
@@ -60,7 +59,6 @@ public class PlayFragment extends Fragment {
         if (progressTxt != null) {
             progressTxt.setText(TimeUtils.fromS2MS(progress));
         }
-        Log.e(TAG, "进度控制 " + progress);
     }
 
 
@@ -90,6 +88,27 @@ public class PlayFragment extends Fragment {
         progressPannel.setVisibility(View.INVISIBLE);
     }
 
+
+
+    private void changeFillableColor() {
+        if (colorChange == 0) {
+            circularFillableLoaders.setColor(R.color.colorAccent);
+        } else if (colorChange == 1) {
+            circularFillableLoaders.setColor(R.color.C_54FF9F);
+        } else if (colorChange == 2) {
+            circularFillableLoaders.setColor(R.color.C_00FFFF);
+        } else if (colorChange == 3) {
+            circularFillableLoaders.setColor(R.color.C_436EEE);
+        } else {
+            circularFillableLoaders.setColor(R.color.ff0000);
+        }
+        if (colorChange == 4) {
+            colorChange = 0;
+        } else {
+            colorChange += 1;
+        }
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         setActionStatus(action);
@@ -98,7 +117,14 @@ public class PlayFragment extends Fragment {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                circularFillableLoaders.setProgress(progress);
+                if (seekBar.getMax() != 0) {
+                    double ratio = 1- (progress * 0.1) / (seekBar.getMax()*0.1);
+                    circularFillableLoaders.setProgress((int)(100 * ratio));
+                    changeFillableColor();
+                }
+                if (fromUser) {
+                    seekTo(progress);
+                }
             }
 
             @Override
@@ -165,11 +191,27 @@ public class PlayFragment extends Fragment {
         }
     }
 
-    public void onSongPrepared(int duration) {
-        progressTxt.setText("0:00");
-        durationTxt.setText(TimeUtils.fromS2MS(duration));
-        seekBar.setMax(duration);
-        progressPannel.setVisibility(View.VISIBLE);
+    public void onSongPrepared(boolean isSame, int duration) {
+        if (!isSame) {
+            progressTxt.setText("0:00");
+            durationTxt.setText(TimeUtils.fromS2MS(duration));
+            seekBar.setMax(duration);
+            progressPannel.setVisibility(View.VISIBLE);
+        }
         LoadingUtils.getINSTANCE(getActivity()).dismisDialog();
+    }
+
+    private void seekTo(int i) {
+        Parcel data = Parcel.obtain();
+        Parcel reply = Parcel.obtain();
+        try {
+            data.writeInt(i * 1000);
+            ((PlayerActivity)getActivity()).getmBinder().transact(CommonConstant.MusicPlayAction.SET_POSITION, data, reply, 0);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } finally {
+            data.recycle();
+            reply.recycle();
+        }
     }
 }
