@@ -66,14 +66,15 @@ public class PlayFragmentAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int i) {
         PlayFragment playFragment = new PlayFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("CURRENT_SONG", JSON.toJSONString(songList.get(i)));
+        bundle.putString("CURRENT_SONG", JSON.toJSONString(songList.get(i % songList.size())));
         playFragment.setArguments(bundle);
         return playFragment;
     }
 
     @Override
     public int getCount() {
-        return PlayFragmentAdapter.songList.size();
+        //return PlayFragmentAdapter.songList.size();
+        return Integer.MAX_VALUE;
     }
 
 
