@@ -15,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.alibaba.fastjson.JSON;
 import com.example.will.protocol.CommonConstant;
@@ -42,9 +43,6 @@ public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPag
 
     private Handler mainHandler = new Handler();
 
-    public PlayerBroadcast getPlayerBroadcast() {
-        return playerBroadcast;
-    }
 
     public PlayFragmentAdapter getPlayFragmentAdapter() {
         return playFragmentAdapter;
@@ -55,16 +53,22 @@ public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPag
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.e(TAG, "service 绑定完成");
             mBinder = service;
+            setIndexAndListInService();
             //这里线程开启
-            GetProgressThread.getINSTANCE(context, mBinder, mainHandler).start();
+            GetProgressThread thread = GetProgressThread.getINSTANCE();
+            thread.setFromMain(false);
+            thread.setmBinder(mBinder);
+            thread.setContext(context);
+            thread.setMainHandler(mainHandler);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             serviceConnection = null;
         }
-    };;
+    };
 
     private IBinder mBinder;
 
@@ -84,10 +88,6 @@ public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPag
         setContentView(R.layout.music_play_layout);
         initView();
         initData(getIntent());
-        playerBroadcast = new PlayerBroadcast();
-        playerBroadcast.setListener(this);
-        registerReceiver(playerBroadcast, new IntentFilter(
-                CommonConstant.BroadcastName.MUSIC_PREPARED));
     }
 
     @Override
@@ -105,9 +105,51 @@ public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPag
     @Override
     public void onResume(){
         super.onResume();
+        playerBroadcast = new PlayerBroadcast();
+        playerBroadcast.setListener(this);
+        registerReceiver(playerBroadcast, new IntentFilter(
+                CommonConstant.BroadcastName.MUSIC_PREPARED));
+
+        Intent serviceIntent = new Intent();
+        ComponentName componentName = new ComponentName("com.example.will.sharelight",
+                "com.example.will.sharelight.palyer.MusicPlayService");
+        serviceIntent.setComponent(componentName);
+        bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE);
+        Log.e(TAG, "bindservice");
         Log.e(TAG, "onresume 完成");
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.e(TAG, "onPause 完成");
+        unbindService(serviceConnection);
+        unregisterReceiver(playerBroadcast);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.e(TAG, "onStop 完成");
+    }
+
+
+
+    private void setIndexAndListInService() {
+        Parcel data = Parcel.obtain();
+        Parcel reply = Parcel.obtain();
+        try {
+            data.writeString(JSON.toJSONString(songs));
+            data.writeInt(currentSongIndex);
+            mBinder.transact(CommonConstant.MusicPlayAction.SET_INDEX_AND_LIST,
+                    data, reply, 0);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } finally {
+            data.recycle();
+            reply.recycle();
+        }
+    }
 
 
     private void initView() {
@@ -115,6 +157,7 @@ public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPag
     }
 
     private void initData(Intent intent) {
+        Log.e(TAG, "initData");
         Bundle bundle = intent.getExtras();
         songs = JSON.parseArray(bundle.getString("SONG_LIST"), Song.class);
         currentSongIndex = bundle.getInt("CURRENT_INDEX");
@@ -124,25 +167,12 @@ public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPag
         songViewPager.setAdapter(playFragmentAdapter);
         songViewPager.setCurrentItem(currentSongIndex);
         songViewPager.addOnPageChangeListener(this);
-        Intent serviceIntent = new Intent();
-        ComponentName componentName = new ComponentName("com.example.will.sharelight",
-                "com.example.will.sharelight.palyer.MusicPlayService");
-        serviceIntent.setComponent(componentName);
-        Bundle serviceBundle = new Bundle();
-        serviceBundle.putString("SONG_LIST", JSON.toJSONString(songs));
-        serviceBundle.putInt("CURRENT_INDEX", currentSongIndex);
-        serviceIntent.putExtras(serviceBundle);
-        bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE);
     }
 
     @Override
     public void onDestroy(){
         super.onDestroy();
         Log.e(TAG, "执行了 onDestry");
-        unregisterReceiver(playerBroadcast);
-        GetProgressThread.getINSTANCE(this, mBinder, mainHandler).interrupt();
-        GetProgressThread.getINSTANCE(this, mBinder, mainHandler).setInterrupted(true);
-        unbindService(serviceConnection);
     }
 
     @Override
@@ -231,8 +261,6 @@ public class PlayerActivity extends AppCompatActivity implements ViewPager.OnPag
 
     @Override
     public void onSongFinished(int nextIndex) {
-        if (playFragmentAdapter != null) {
-            songViewPager.setCurrentItem(nextIndex);
-        }
+        songViewPager.setCurrentItem(nextIndex);
     }
 }

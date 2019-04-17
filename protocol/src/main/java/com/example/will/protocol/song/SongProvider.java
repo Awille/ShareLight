@@ -2,6 +2,7 @@ package com.example.will.protocol.song;
 
 import com.example.will.protocol.BasicProvider;
 import com.example.will.protocol.song.callback.AddSongCallback;
+import com.example.will.protocol.song.callback.GetRandomSongCallback;
 import com.example.will.protocol.song.callback.QuerySongCallback;
 import com.example.will.protocol.song.callback.QuerySongsCallback;
 import com.example.will.protocol.song.callback.UploadSongFileCallback;
@@ -41,4 +42,6 @@ public interface SongProvider extends BasicProvider {
      * @param callback
      */
     void addSong(AddSongRequest request, AddSongCallback callback);
+
+    void getRandomSong(String random, GetRandomSongCallback callback);
 }

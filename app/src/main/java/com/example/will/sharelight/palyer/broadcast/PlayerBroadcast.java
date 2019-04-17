@@ -25,14 +25,23 @@ public class PlayerBroadcast extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Bundle bundle = intent.getExtras();
         String nextStr = bundle.getString("NEXT_SONG_INDEX");
-        if (!TextUtils.isEmpty(nextStr)) {
+        boolean recommend = bundle.getBoolean("RECOMMEND");
+        boolean isSame = bundle.getBoolean("SAME_SONG");
+        int duration = bundle.getInt("SONG_DURATION") / 1000;
+        String code = bundle.getString("CODE");
+        if (listener == null) {
+            return;
+        }
+        if (code.equals("101")) {
+            listener.onSongPrepared(isSame, duration);
+        } else if (code.equals("102")) {
             listener.onSongFinished(Integer.valueOf(nextStr));
-        } else {
-            boolean isSame = bundle.getBoolean("SAME_SONG");
-            int duration = bundle.getInt("SONG_DURATION") / 1000;
-            if (listener != null) {
-                listener.onSongPrepared(isSame, duration);
-            }
+        } else if (code.equals("103")) {
+            listener.onSongFinished(0);
+        } else if (code.equals("104")) {
+            listener.onSongPrepared(true, duration);
+        } else if (code.equals("105")) {
+            listener.onSongPrepared(true, duration);
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.example.will.protocol.comment;
 
+import com.example.will.protocol.user.User;
+
 import java.io.Serializable;
 
 public class Comment implements Serializable {
@@ -48,6 +50,10 @@ public class Comment implements Serializable {
      * 回复他的评论实体对象 在二级评论中才有
      */
     private Comment replyComment;
+    /**
+     * 评论的作者
+     */
+    private User user;
 
     public long getCommentId() {
         return commentId;
@@ -135,5 +141,13 @@ public class Comment implements Serializable {
 
     public void setReplyComment(Comment replyComment) {
         this.replyComment = replyComment;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

@@ -25,7 +25,7 @@
                 android:layout_height="@dimen/dp_300"
                 android:src="@drawable/music"
                 app:cfl_progress="60"
-                app:cfl_wave_color="@color/C_00FFFF" />
+                app:cfl_wave_color="#3f51b5" />
 
             <ImageView
                 android:id="@+id/action"
@@ -68,13 +68,6 @@
                     android:text="4:30"/>
 
             </LinearLayout>
-
-            <ImageView
-                android:id="@+id/comment"
-                android:layout_marginTop="@dimen/dp_20"
-                android:layout_width="@dimen/dp_30"
-                android:layout_height="@dimen/dp_30"
-                android:src="@drawable/comment"/>
 
         </LinearLayout>
 

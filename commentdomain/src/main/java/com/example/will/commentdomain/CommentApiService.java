@@ -22,7 +22,7 @@ public interface CommentApiService {
     HttpCall<QueryCommentResponse> queryComment(@Query("commentId") long commentId);
 
     @GET(RetrofitMrg.commentUrl)
-    HttpCall<QueryCommentsResponse> queryComments(@Query("songId") long songId, @Query("replyCommentId") long replyCommentId);
+    HttpCall<QueryCommentsResponse> queryComments(@Query("songId") Long songId, @Query("replyCommentId") Long replyCommentId);
 
     @POST(RetrofitMrg.commentUrl)
     HttpCall<AddCommentResponse> addComment(@Body AddCommentRequest request);

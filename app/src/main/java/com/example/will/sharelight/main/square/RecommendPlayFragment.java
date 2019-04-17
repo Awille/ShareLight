@@ -1,8 +1,6 @@
-package com.example.will.sharelight.palyer;
+package com.example.will.sharelight.main.square;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
@@ -16,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.example.will.network.imageloader.ImageLoader;
@@ -24,19 +21,21 @@ import com.example.will.network.retrofit.RetrofitMrg;
 import com.example.will.protocol.CommonConstant;
 import com.example.will.protocol.song.Song;
 import com.example.will.sharelight.R;
-import com.example.will.sharelight.comment.CommentActivity;
+import com.example.will.sharelight.main.MainActivity;
+import com.example.will.sharelight.palyer.PlayerActivity;
 import com.example.will.utils.TimeUtils;
 import com.example.will.utils.loadingutils.LoadingUtils;
 import com.example.will.utils.toast.ToastUtils;
 import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
 
+public class RecommendPlayFragment extends Fragment implements RecommendContract.RecommendView {
 
-public class PlayFragment extends Fragment {
-
-    private static final String TAG = "PlayFragment";
+    private static final String TAG = "RecommendPlayFragment";
     private CircularFillableLoaders circularFillableLoaders;
     private ImageView action;
     private SeekBar seekBar;
+
+    private RecommendContract.RecommendPresenter recommendPresenter;
 
     private LinearLayout progressPannel;
     private TextView progressTxt;
@@ -45,14 +44,12 @@ public class PlayFragment extends Fragment {
 
     private int colorChange = 0;
 
-    private ImageView comment;
-
 
     public boolean isPlay = true;
 
     private Song currentSong;
 
-    public PlayFragment() {
+    public RecommendPlayFragment() {
         super();
     }
 
@@ -74,9 +71,6 @@ public class PlayFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.music_single_play, container, false);
-        if (getArguments() != null) {
-            currentSong = JSON.parseObject(getArguments().getString("CURRENT_SONG"), Song.class);
-        }
         initView(view);
         return view;
     }
@@ -89,28 +83,16 @@ public class PlayFragment extends Fragment {
         progressTxt = view.findViewById(R.id.song_progress);
         durationTxt = view.findViewById(R.id.song_duration);
         progressPannel = view.findViewById(R.id.progress_pannel);
-        comment = view.findViewById(R.id.comment);
         progressPannel.setVisibility(View.INVISIBLE);
 
-        comment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), CommentActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("CURRENT_SONG", JSON.toJSONString(currentSong));
-                intent.putExtras(bundle);
-                getActivity().startActivity(intent);
-            }
-        });
+        recommendPresenter = new RecommendPresenterImpl(this);
     }
+
 
 
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        setActionStatus(action);
-        ImageLoader.build(getActivity()).bindBitmap(RetrofitMrg.baseUrl + currentSong.getAvatarUrl(),
-                circularFillableLoaders, 200, 200);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -139,8 +121,6 @@ public class PlayFragment extends Fragment {
                 changePlayStatus(action);
             }
         });
-        LoadingUtils.getINSTANCE(getActivity()).showLoadingViewGhost();
-        Log.e(TAG, "onViewCreated");
     }
 
     public void setActionStatus(ImageView action) {
@@ -152,7 +132,7 @@ public class PlayFragment extends Fragment {
     }
 
     private void changePlayStatus(ImageView action) {
-        if (!((PlayerActivity)getActivity()).getIsPrepared()) {
+        if (!((MainActivity)getActivity()).getFragmentPagerAdapter().getmSquareFragment().getIsPrepared()) {
             Log.e(TAG, "未加载完成");
             ToastUtils.showWarningToast(getActivity(), "正在加载，请稍后", ToastUtils.LENGTH_SHORT);
             return;
@@ -162,7 +142,7 @@ public class PlayFragment extends Fragment {
         Parcel reply = Parcel.obtain();
         if (isPlay) {
             try {
-                ((PlayerActivity)getActivity()).getmBinder().transact(CommonConstant.MusicPlayAction.PAUSE, data, reply, 0);
+                ((MainActivity)getActivity()).getmBinder().transact(CommonConstant.MusicPlayAction.PAUSE, data, reply, 0);
                 action.setImageResource(R.drawable.start);
                 isPlay = false;
             } catch (RemoteException e) {
@@ -174,7 +154,7 @@ public class PlayFragment extends Fragment {
             }
         } else {
             try {
-                ((PlayerActivity)getActivity()).getmBinder().transact(CommonConstant.MusicPlayAction.PLAY, data, reply, 0);
+                ((MainActivity)getActivity()).getmBinder().transact(CommonConstant.MusicPlayAction.PLAY, data, reply, 0);
                 action.setImageResource(R.drawable.pause);
                 isPlay = true;
             } catch (RemoteException e) {
@@ -190,10 +170,12 @@ public class PlayFragment extends Fragment {
     public void onSongPrepared(boolean isSame, int duration) {
         if (!isSame) {
             progressTxt.setText("0:00");
-            durationTxt.setText(TimeUtils.fromS2MS(duration));
-            seekBar.setMax(duration);
-            progressPannel.setVisibility(View.VISIBLE);
+        } else {
+            ToastUtils.showWarningToast(getActivity(), "歌曲与上一首相同", ToastUtils.LENGTH_LONG);
         }
+        durationTxt.setText(TimeUtils.fromS2MS(duration));
+        seekBar.setMax(duration);
+        progressPannel.setVisibility(View.VISIBLE);
         LoadingUtils.getINSTANCE(getActivity()).dismisDialog();
     }
 
@@ -202,7 +184,7 @@ public class PlayFragment extends Fragment {
         Parcel reply = Parcel.obtain();
         try {
             data.writeInt(i * 1000);
-            ((PlayerActivity)getActivity()).getmBinder().transact(CommonConstant.MusicPlayAction.SET_POSITION, data, reply, 0);
+            ((MainActivity)getActivity()).getmBinder().transact(CommonConstant.MusicPlayAction.SET_POSITION, data, reply, 0);
         } catch (RemoteException e) {
             e.printStackTrace();
         } finally {
@@ -210,4 +192,48 @@ public class PlayFragment extends Fragment {
             reply.recycle();
         }
     }
+
+
+    public void playRecommendSong() {
+        Log.e(TAG, "准备加载歌曲");
+        LoadingUtils.getINSTANCE(getActivity()).showLoadingViewGhost();
+        recommendPresenter.getRecommendSong("random");
+    }
+
+    public void askServicePlaySong() {
+        if (currentSong == null) {
+            return;
+        }
+        Parcel data = Parcel.obtain();
+        Parcel reply = Parcel.obtain();
+        try {
+            data.writeString(JSON.toJSONString(currentSong));
+            ((MainActivity)getActivity()).getmBinder().transact(CommonConstant.MusicPlayAction.PLAY_RECOMMEND_SONG,
+                    data, reply, 0);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } finally {
+            data.recycle();
+            reply.recycle();
+        }
+        LoadingUtils.getINSTANCE(getActivity()).showLoadingViewGhost();
+    }
+    @Override
+    public void onGetRecommendSongSuccess(Song song) {
+        currentSong = song;
+        setActionStatus(action);
+        ImageLoader.build(getActivity()).bindBitmap(RetrofitMrg.baseUrl + currentSong.getAvatarUrl(),
+                circularFillableLoaders, 200, 200);
+        askServicePlaySong();
+        Log.e(TAG, "服务加载歌曲");
+    }
+
+    @Override
+    public void onGetRecommendSongFail(String errCode, String errMsg) {
+        LoadingUtils.getINSTANCE(getActivity()).dismisDialog();
+        ToastUtils.showErrorToast(getActivity(), errMsg, ToastUtils.LENGTH_LONG);
+    }
+
+
+
 }

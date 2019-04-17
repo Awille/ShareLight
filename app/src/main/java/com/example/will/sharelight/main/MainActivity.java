@@ -1,9 +1,14 @@
 package com.example.will.sharelight.main;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
@@ -42,6 +47,7 @@ import com.example.will.sharelight.main.dialog.UploadSongResourceDialog;
 import com.example.will.sharelight.main.dialog.UserInfoEditDialogMrg;
 import com.example.will.sharelight.main.homefragment.HomeFragment;
 import com.example.will.sharelight.main.square.SquareFragment;
+import com.example.will.sharelight.palyer.GetProgressThread;
 import com.example.will.utils.CircleImageView;
 import com.example.will.utils.FileUtils;
 import com.example.will.utils.MyTextView;
@@ -58,7 +64,7 @@ import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.util.Calendar;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, DatePickerDialog.OnDateSetListener, MainContract.MainView {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, DatePickerDialog.OnDateSetListener, MainContract.MainView, ViewPager.OnPageChangeListener {
 
     private static final String TAG = "MainActivity";
 
@@ -95,9 +101,63 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TabLayout.Tab home;
     private TabLayout.Tab square;
 
+
+    private Context context = this;
+
+    private Handler mainHandler = new Handler();
+
     private MainPresenterImpl mainPresenter;
 
     private RecyclerView songListRecyclerView;
+
+    private IBinder mBinder;
+
+    public IBinder getmBinder() {
+        return mBinder;
+    }
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mBinder = service;
+
+            Log.e(TAG, "SquareFragment:" + fragmentPagerAdapter.getmSquareFragment());
+            GetProgressThread.getINSTANCE().setFromMain(true);
+            GetProgressThread.getINSTANCE().setmBinder(mBinder);
+            GetProgressThread.getINSTANCE().setContext(context);
+            GetProgressThread.getINSTANCE().setMainHandler(mainHandler);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            serviceConnection = null;
+        }
+    };
+
+    public MyFragmentPagerAdapter getFragmentPagerAdapter() {
+        return fragmentPagerAdapter;
+    }
+
+    @Override
+    public void onPageScrolled(int i, float v, int i1) {
+
+    }
+
+    @Override
+    public void onPageSelected(int i) {
+        Log.e(TAG, "页面跳转" + i);
+        if (i == 1) {
+            fragmentPagerAdapter.getmSquareFragment().getRecommendFragmentAdapter().getCurrentFragment().playRecommendSong();
+            GetProgressThread.getINSTANCE().setContext(this);
+            GetProgressThread.getINSTANCE().setFromMain(true);
+            GetProgressThread.getINSTANCE().setSquareFragment(fragmentPagerAdapter.getmSquareFragment());
+        }
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int i) {
+
+    }
 
 
     public interface HomeFragmentListener {
@@ -123,7 +183,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
         toolBarInit();
         setLeftSideBarListener();
+
+        Intent serviceIntent = new Intent();
+        ComponentName componentName = new ComponentName("com.example.will.sharelight",
+                "com.example.will.sharelight.palyer.MusicPlayService");
+        serviceIntent.setComponent(componentName);
+        startService(serviceIntent);
+        GetProgressThread.getINSTANCE().start();
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.e(TAG, "onStart");
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        Intent serviceIntent = new Intent();
+        ComponentName componentName = new ComponentName("com.example.will.sharelight",
+                "com.example.will.sharelight.palyer.MusicPlayService");
+        serviceIntent.setComponent(componentName);
+        bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE);
+        Log.e(TAG, "onResume");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        unbindService(serviceConnection);
+        Log.e(TAG, "onPause");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.e(TAG, "onStop");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.e(TAG, "onDestroy");
+    }
+
 
     public SongListSettingDialog getSongListSettingDialog() {
         return songListSettingDialog;
@@ -166,6 +269,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fragmentPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(fragmentPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
+        mViewPager.addOnPageChangeListener(this);
 
         //tab绑定
         home = mTabLayout.getTabAt(0);

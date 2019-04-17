@@ -5,6 +5,7 @@ import com.example.will.network.retrofit.RetrofitMrg;
 import com.example.will.protocol.song.request.AddSongRequest;
 import com.example.will.protocol.song.request.UploadSongFileRequest;
 import com.example.will.protocol.song.response.AddSongResponse;
+import com.example.will.protocol.song.response.GetRandomSongResponse;
 import com.example.will.protocol.song.response.QuerySongResponse;
 import com.example.will.protocol.song.response.QuerySongsResponse;
 import com.example.will.protocol.song.response.UploadSongFileReponse;
@@ -27,4 +28,7 @@ public interface SongApiService {
 
     @POST(RetrofitMrg.songUrl)
     HttpCall<AddSongResponse> addSong(@Body AddSongRequest request);
+
+    @GET(RetrofitMrg.songUrl)
+    HttpCall<GetRandomSongResponse> getRandomSong(@Query("random") String random);
 }

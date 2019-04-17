@@ -15,6 +15,8 @@ public interface CommonConstant {
         int SET_POSITION = 107;
         int MUSIC_PREPARED = 108;
         int PLAY_EXACT_SONG = 201;
+        int PLAY_RECOMMEND_SONG = 202;
+        int SET_INDEX_AND_LIST = 203;
     }
 
     interface BroadcastName {

@@ -73,7 +73,6 @@ public class PlayFragmentAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        //return PlayFragmentAdapter.songList.size();
         return Integer.MAX_VALUE;
     }
 

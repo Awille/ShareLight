@@ -26,7 +26,7 @@ public interface CommentProvider extends BasicProvider {
      * @param replyCommentId
      * @param callback
      */
-    void queryComments(long songId, long replyCommentId, QueryCommentsCallback callback);
+    void queryComments(Long songId, Long replyCommentId, QueryCommentsCallback callback);
 
     /**
      * 添加评论

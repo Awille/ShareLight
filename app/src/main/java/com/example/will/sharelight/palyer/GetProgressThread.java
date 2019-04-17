@@ -7,6 +7,7 @@ import android.os.Parcel;
 import android.os.RemoteException;
 
 import com.example.will.protocol.CommonConstant;
+import com.example.will.sharelight.main.square.SquareFragment;
 
 public class GetProgressThread extends Thread {
 
@@ -14,25 +15,43 @@ public class GetProgressThread extends Thread {
 
     private Context context;
     private IBinder mBinder;
+
     private Handler mainHandler;
 
     private boolean isInterrupted = false;
+
+    private SquareFragment squareFragment;
+
+    private boolean fromMain = false;
+
+    public void setFromMain(boolean fromMain) {
+        this.fromMain = fromMain;
+    }
+
+    public void setmBinder(IBinder mBinder) {
+        this.mBinder = mBinder;
+    }
+
+    public void setMainHandler(Handler mainHandler) {
+        this.mainHandler = mainHandler;
+    }
+
+    public void setSquareFragment(SquareFragment squareFragment) {
+        this.squareFragment = squareFragment;
+    }
+    public void setContext(Context context) {
+        this.context = context;
+    }
 
     public void setInterrupted(boolean interrupted) {
         isInterrupted = interrupted;
     }
 
-    public GetProgressThread(Context context, IBinder mBinder, Handler mainHandler) {
-        this.context = context;
-        this.mBinder = mBinder;
-        this.mainHandler = mainHandler;
-    }
-
-    public static GetProgressThread getINSTANCE(Context context, IBinder mBinder, Handler mainHandler) {
+    public static GetProgressThread getINSTANCE() {
         if (INSTANCE == null) {
             synchronized (GetProgressThread.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = new GetProgressThread(context, mBinder, mainHandler);
+                    INSTANCE = new GetProgressThread();
                 }
             }
         }
@@ -43,20 +62,30 @@ public class GetProgressThread extends Thread {
     public void run() {
         while (true) {
             if (isInterrupted) {
-                INSTANCE = null;
                 break;
             }
             Parcel data = Parcel.obtain();
             Parcel reply = Parcel.obtain();
             try {
-                mBinder.transact(CommonConstant.MusicPlayAction.GET_POSITION, data, reply, 0);
-                final int position = reply.readInt();
-                mainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        ((PlayerActivity)context).getPlayFragmentAdapter().getmCurrentFragment().setSongProgress(position/1000);
-                    }
-                });
+                if (mBinder != null) {
+                    mBinder.transact(CommonConstant.MusicPlayAction.GET_POSITION, data, reply, 0);
+                    final int position = reply.readInt();
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!fromMain) {
+                                PlayFragment playFragment = ((PlayerActivity)context).getPlayFragmentAdapter().getmCurrentFragment();
+                                if (playFragment != null) {
+                                    playFragment.setSongProgress(position/1000);
+                                }
+                            } else {
+                                if (squareFragment != null) {
+                                    squareFragment.getRecommendFragmentAdapter().getCurrentFragment().setSongProgress(position/1000);
+                                }
+                            }
+                        }
+                    });
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             } finally {

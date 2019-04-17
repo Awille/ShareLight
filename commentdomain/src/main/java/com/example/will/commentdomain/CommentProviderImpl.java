@@ -49,7 +49,7 @@ public class CommentProviderImpl implements CommentProvider {
     }
 
     @Override
-    public void queryComments(long songId, long replyCommentId, final QueryCommentsCallback callback) {
+    public void queryComments(Long songId, Long replyCommentId, final QueryCommentsCallback callback) {
         RequestManager.call(commentApiService.queryComments(songId, replyCommentId), new HttpCallback<QueryCommentsResponse>() {
             @Override
             public void onSuccess(QueryCommentsResponse respObj) {

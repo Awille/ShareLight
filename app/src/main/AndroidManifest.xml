@@ -27,6 +27,9 @@
         <activity android:name=".palyer.PlayerActivity"
             android:launchMode="singleInstance">
         </activity>
+        <activity android:name=".comment.CommentActivity">
+
+        </activity>
         <service android:name=".palyer.MusicPlayService"
             android:process=":remote"
             android:exported="true">

@@ -8,12 +8,14 @@ import com.example.will.network.retrofit.RetrofitMrg;
 import com.example.will.protocol.CommonConstant;
 import com.example.will.protocol.song.SongProvider;
 import com.example.will.protocol.song.callback.AddSongCallback;
+import com.example.will.protocol.song.callback.GetRandomSongCallback;
 import com.example.will.protocol.song.callback.QuerySongCallback;
 import com.example.will.protocol.song.callback.QuerySongsCallback;
 import com.example.will.protocol.song.callback.UploadSongFileCallback;
 import com.example.will.protocol.song.request.AddSongRequest;
 import com.example.will.protocol.song.request.UploadSongFileRequest;
 import com.example.will.protocol.song.response.AddSongResponse;
+import com.example.will.protocol.song.response.GetRandomSongResponse;
 import com.example.will.protocol.song.response.QuerySongResponse;
 import com.example.will.protocol.song.response.QuerySongsResponse;
 import com.example.will.protocol.song.response.UploadSongFileReponse;
@@ -119,6 +121,30 @@ public class SongProviderImpl implements SongProvider {
             @Override
             public void onSystemError(String errCode, String errMsg) {
                 callback.onAddSongFail(errCode, errMsg);
+            }
+        });
+    }
+
+    @Override
+    public void getRandomSong(String random, final GetRandomSongCallback callback) {
+        RequestManager.call(songApiService.getRandomSong(random), new HttpCallback<GetRandomSongResponse>() {
+            @Override
+            public void onSuccess(GetRandomSongResponse respObj) {
+                if (respObj.getCode().equals(SUCCESS)) {
+                    callback.onGetRandomSongSuccess(respObj);
+                } else {
+                    callback.onGetRandomSongFail(respObj.getCode(), respObj.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errCode, String errMsg) {
+                callback.onGetRandomSongFail(errCode, errMsg);
+            }
+
+            @Override
+            public void onSystemError(String errCode, String errMsg) {
+                callback.onGetRandomSongFail(errCode, errMsg);
             }
         });
     }
